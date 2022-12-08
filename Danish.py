@@ -19,7 +19,7 @@ class Diamond :
         plt.scatter(X_red,Y_red, color = 'red')
         plt.axis('off')
         plt.show()
-
+    # Add checkboard tomorrow
 
 grid = Diamond(4)
 grid.plot()
