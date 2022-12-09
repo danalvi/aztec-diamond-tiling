@@ -21,9 +21,8 @@ class Diamond :
 
         self.E = set({})
 
-        for face in self.grey_faces :   # adding the edges of the grey faces is sufficient to have all edges
+        for face in self.grey_faces :               # adding the edges of the grey faces is sufficient to have all edges. However, these are direcfed
             self.E = self.E.union(face.sides)
-
 
     class __face :                                  # This class will remain private ... hidden far from sight
         def __init__(self, bottom_left, isCheck) :
@@ -40,7 +39,7 @@ class Diamond :
             x, y = self.bottom_left
             return [x, x + 1, x + 1, x ], [y, y, y + 1, y + 1]
 
-    def plot_board(self, checker = True, edges = False) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
+    def plot_board(self, checker = True, edges = False, dotsVisible = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
         X_blk, Y_blk = list(zip(*self.__D_blk))
 
@@ -61,7 +60,11 @@ class Diamond :
         #     X, Y = face.get_poly()
         #     plt.fill(X,Y, color = 'lightblue')
 
-        plt.scatter(X_blk,Y_blk, color = 'black')
-        plt.scatter(X_red,Y_red, color = 'red')
+        alpha_ = 1
+        if not dotsVisible :
+            alpha_ = 0
+
+        plt.scatter(X_blk,Y_blk, color = 'black', alpha = alpha_ )
+        plt.scatter(X_red,Y_red, color = 'red', alpha = alpha_)
         plt.axis('off')
         plt.show()
