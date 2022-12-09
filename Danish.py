@@ -7,8 +7,8 @@ class Diamond :
         self.__D_blk = sum([ self.D[i] for i in range(0, 2*self.n + 1, 2 )], [])
         self.__D_red = sum([ self.D[i] for i in range(1, 2*self.n, 2 )], [])
         self.V = sum(self.D, [])
-        self.__grey_faces  = set(sum([ self.D[i] for i in range(0, 2*self.n, 2 )], [] )) # bottom left coordinates of grey faces
-        self.__white_faces = set(self.V) - self.__grey_faces                               # bottom left coordinates of white faces
+        self.__grey_faces  = set(sum([ self.D[i] for i in range(0, 2*self.n, 2 )], [] ))       # bottom left coordinates of grey faces
+        self.__white_faces = set(sum([ self.D[i][1 : self.n ] for i in range(1, 2*self.n - 1, 2 )], [] ))  # bottom left coordinates of white faces
         self.grey_faces = set([self.__face(x, True) for x in self.__grey_faces ])
         self.white_faces = set([self.__face(x, False) for x in self.__white_faces ])
         self.faces = self.grey_faces.union(self.white_faces)
@@ -29,6 +29,11 @@ class Diamond :
         for grey_face in self.grey_faces :
             X, Y = grey_face.get_poly()
             plt.fill(X,Y, color = 'lightgrey')
+
+        # This is only for debugging purposes (to see the white faces )
+        # for white_face in self.white_faces :
+        #     X, Y = white_face.get_poly()
+        #     plt.fill(X,Y, color = 'blue')
 
         plt.scatter(X_blk,Y_blk, color = 'black')
         plt.scatter(X_red,Y_red, color = 'red')
