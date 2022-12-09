@@ -21,7 +21,7 @@ class Diamond :
 
         self.E = set({})
 
-        for face in self.faces :
+        for face in self.grey_faces :   # adding the edges of the grey faces is sufficient to have all edges
             self.E = self.E.union(face.sides)
 
 
