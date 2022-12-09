@@ -8,7 +8,7 @@ class Diamond :
         self.__D_blk = sum([ self.D[i] for i in range(0, 2*self.n + 1, 2 )], [])
         self.__D_red = sum([ self.D[i] for i in range(1, 2*self.n, 2 )], [])
         self.V = sum(self.D, [])
-
+        self.__m = 5
         # Faces
 
         self.__grey_faces  = set(sum([ self.D[i] for i in range(0, 2*self.n, 2 )], [] ))                   # bottom left coordinates of grey faces, decided to keep it private as it's a messy/internal representation
@@ -22,7 +22,7 @@ class Diamond :
         self.E = set({})
 
         for face in self.grey_faces :               # adding the edges of the grey faces is sufficient to have all edges. However, these are direcfed
-            self.E = self.E.union(face.sides)
+            self.E = self.E.union(face.edges)
 
     class __face :                                  # This class will remain private ... hidden far from sight
         def __init__(self, bottom_left, isCheck) :
@@ -30,10 +30,18 @@ class Diamond :
             self.isCheck = isCheck
             x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
             self.corners = [(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
-            self.sides   = set({ ((x, y), (x + 1, y)),
-                                 ((x + 1, y), (x + 1, y + 1) ),
-                                 ((x + 1, y + 1), (x, y + 1) ),
-                                 ((x, y + 1), (x,y) )  })
+            self.edges = set({ self.edge(((x, y), (x + 1, y))),
+                               self.edge(((x + 1, y), (x + 1, y + 1) )),
+                               self.edge(((x + 1, y + 1), (x, y + 1) )),
+                               self.edge(((x, y + 1), (x,y)))  } )
+
+        def edge(self, e) :
+            parent = self
+            class edge :
+                def __init__(self, e) :
+                    self.e = e
+                    self.parent = parent
+            return edge(e)
 
         def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
             x, y = self.bottom_left
