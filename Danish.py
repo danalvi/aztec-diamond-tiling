@@ -1,10 +1,13 @@
 
+import math
 import matplotlib.pyplot as plt
 
 class Diamond :
     def __init__(self, n): # n is the order of the Aztec Diamond
         self.n = n
         self.D = [ [(x,y) for x in range(-n, n + 1) for y in range(-n - 1, n + 1) if x + y == i and abs(x - y) <= n ] for i in range(-n + 1, n + 2)   ] # D^{k}_{n} as defined on [1] p. 11
+        #V = len(self.D)
+        #self.w_m = math.pow(1 / math.pow(2,((self.n+1)*(self.n)/2)),(1/(V/2)))
         self.__D_blk = sum([ self.D[i] for i in range(0, 2*self.n + 1, 2 )], [])
         self.__D_red = sum([ self.D[i] for i in range(1, 2*self.n, 2 )], [])
         self.V = sum(self.D, [])
@@ -17,35 +20,51 @@ class Diamond :
         self.white_faces = set([self.__face(x, False) for x in self.__white_faces ])
         self.faces = self.grey_faces.union(self.white_faces)
 
+        self.Am = []           # Get A_m boundary faces
+
+    def get_Am(self, m) :
+        return [face for face in self.faces if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
+
         # Edges
 
         self.E = set({})
 
         for face in self.grey_faces :               # adding the edges of the grey faces is sufficient to have all edges. However, these are direcfed
-            self.E = self.E.union(face.edges)
+            self.E = self.E.union(set(face.edges))
 
-    class __face :                                  # This class will remain private ... hidden far from sight
-        def __init__(self, bottom_left, isCheck) :
-            self.bottom_left = bottom_left                                    # We will identify each face with its bottom left coordinate
-            self.isCheck = isCheck
-            x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
-            self.corners = [(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
-            self.edges = set({ self.edge(((x, y), (x + 1, y))),
-                               self.edge(((x + 1, y), (x + 1, y + 1) )),
-                               self.edge(((x + 1, y + 1), (x, y + 1) )),
-                               self.edge(((x, y + 1), (x,y)))  } )
+    def __face(self, bottom_left, isCheck):
+        parent = self
+        class __face :                                  # This class will remain private ... hidden far from sight
+            def __init__(self, bottom_left, isCheck) :
+                self.parent = parent
+                self.bottom_left = bottom_left                                    # We will identify each face with its bottom left coordinate
+                self.isCheck = isCheck
+                x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
+                self.corners = [(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
+                self.edges = list([ self.edge(((x, y), (x + 1, y))),
+                                   self.edge(((x + 1, y), (x + 1, y + 1) )),
+                                   self.edge(((x + 1, y + 1), (x, y + 1) )),
+                                   self.edge(((x, y + 1), (x,y)))  ] )
+                self.DP = []
 
-        def edge(self, e) :
-            parent = self
-            class edge :
-                def __init__(self, e) :
-                    self.e = e
-                    self.parent = parent
-            return edge(e)
+            def showEdges(self) :
+                # for edge in self.edges :
+                #     print(edge.e)
+                return
 
-        def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
-            x, y = self.bottom_left
-            return [x, x + 1, x + 1, x ], [y, y, y + 1, y + 1]
+            def edge(self, e) :                         # Ideally I'd make a vertex object too, but that's overkill
+                parent = self
+                class edge :
+                    def __init__(self, e) :
+                        self.e = e
+                        self.parent = parent                                  # Accessing this returns the parent face of the edge
+                        self.w = [1]                                           # These are the edge weights ...
+                return edge(e)
+
+            def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
+                x, y = self.bottom_left
+                return [x, x + 1, x + 1, x ], [y, y, y + 1, y + 1]
+        return __face(bottom_left, isCheck)
 
     def plot_board(self, checker = True, edges = False, dotsVisible = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
@@ -59,7 +78,8 @@ class Diamond :
                 plt.fill(X,Y, color = 'lightgrey')
 
         if edges :
-            for (u1,v1), (u2,v2) in self.E :
+            for edge in self.E :
+                (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
         # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
@@ -74,5 +94,5 @@ class Diamond :
 
         plt.scatter(X_blk,Y_blk, color = 'black', alpha = alpha_ )
         plt.scatter(X_red,Y_red, color = 'red', alpha = alpha_)
-        plt.axis('off')
+        #plt.axis('off')
         plt.show()
