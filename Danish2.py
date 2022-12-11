@@ -21,24 +21,24 @@ grid = Aztec.Diamond(n)
 #
 
 for k in range(n, 0, -1) :
-    Am = grid.get_Am(k)
-    for face in Am :
+    #Am = grid.get_Am(k)
+    for face in list(grid.faces.values()) :
         (i, j) = face.bottom_left
         if (i + j - k) % 2 == 0 :
             e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
             e2 = face.edges[1]
 
-            alpha = e_(face, e1).w[-1]
-            gamma = e1.w[-1]
-            beta = e2.w[-1]
-            delta = e_(face, e2).w[-1]
+            alpha = e_(face, e1).w
+            gamma = e1.w
+            beta = e2.w
+            delta = e_(face, e2).w
 
             DP = alpha*gamma + beta*delta
 
-            e1.w.append(alpha/DP)
-            e_(face, e1).w.append(gamma/DP)
-            e2.w.append(delta/DP)
-            e_(face, e2).w.append(beta/DP)
+            e1.w = alpha/DP
+            e_(face, e1).w = gamma/DP
+            e2.w = delta/DP
+            e_(face, e2).w = beta/DP
 
 print(grid.faces[(0,0)].edges[0].w)
 #grid.plot_board()
