@@ -64,7 +64,7 @@ class Diamond :
     class edge :
         def __init__(self, e) :
             self.e = e
-            self.w = 1
+            self.w = [1]
 
     def plot_board(self, checker = True, edges = False, dotsVisible = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
