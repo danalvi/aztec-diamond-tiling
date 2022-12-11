@@ -34,4 +34,4 @@ def weight_computation(grid) :
 import Danish2
 grid = Aztec.Diamond(10)
 weight_computation(grid)
-grid.faces[(0,0)].edges[0].w # Returns the weight of first edge in clockwise order of face with bottm left corner at (0,0)
+print(grid.faces[(0,9)].edges[0].w) # Returns the weight of first edge in anticlockwise order of face with bottm left corner at (0,0)
