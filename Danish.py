@@ -27,44 +27,43 @@ class Diamond :
 
         self.Am = []           # Get A_m boundary faces
 
+                # Edges
+
+        self.E = dict()
+
+        for face in list(self.faces.values()) :                    # adding the edges of the grey faces is sufficient to have all edges. However, these are direcfed
+            x, y = face.bottom_left
+            self.E[frozenset({(x, y), (x + 1, y)})] = self.edge( {(x, y), (x + 1, y)})
+            self.E[frozenset({(x + 1, y), (x + 1, y + 1)})] = self.edge( {(x + 1, y), (x + 1, y + 1)})
+            self.E[frozenset({(x + 1, y + 1), (x, y + 1)})] = self.edge( {(x + 1, y + 1), (x, y + 1)})
+            self.E[frozenset({(x, y + 1), (x, y)})] = self.edge( {(x, y + 1), (x, y)} )
+
+        for face in list(self.faces.values()) :
+            x, y = face.bottom_left
+            face.edges = [  self.E[frozenset( {(x, y), (x + 1, y)})],
+                            self.E[frozenset( {(x + 1, y), (x + 1, y + 1)})],
+                            self.E[frozenset( {(x + 1, y + 1), (x, y + 1)})],
+                            self.E[frozenset({(x, y + 1), (x, y)})]  ]
+
     def get_Am(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
 
-        # Edges
+    class __face :                                  # This class will remain private ... hidden far from sight
+        def __init__(self, bottom_left, isCheck) :
+            self.bottom_left = bottom_left                                    # We will identify each face with its bottom left coordinate
+            self.isCheck = isCheck
+            x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
+            self.edges = []
 
-        self.E = set({})
+        def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
+            x, y = self.bottom_left
+            return [x, x + 1, x + 1, x ], [y, y, y + 1, y + 1]
 
-        for face in self.grey_faces :               # adding the edges of the grey faces is sufficient to have all edges. However, these are direcfed
-            self.E = self.E.union(set(face.edges))
 
-    def __face(self, bottom_left, isCheck):
-        parent = self
-        class __face :                                  # This class will remain private ... hidden far from sight
-            def __init__(self, bottom_left, isCheck) :
-                self.parent = parent
-                self.bottom_left = bottom_left                                    # We will identify each face with its bottom left coordinate
-                self.isCheck = isCheck
-                x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
-                self.corners = [(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
-                self.edges = list([ self.edge(((x, y), (x + 1, y))),
-                                   self.edge(((x + 1, y), (x + 1, y + 1) )),
-                                   self.edge(((x + 1, y + 1), (x, y + 1) )),
-                                   self.edge(((x, y + 1), (x,y)))  ] )
-                self.DP = []
-
-            def edge(self, e) :                         # Ideally I'd make a vertex object too, but that's overkill
-                parent = self
-                class edge :
-                    def __init__(self, e) :
-                        self.e = e
-                        self.parent = parent                                  # Accessing this returns the parent face of the edge
-                        self.w = []                                           # These are the edge weights ...
-                return edge(e)
-
-            def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
-                x, y = self.bottom_left
-                return [x, x + 1, x + 1, x ], [y, y, y + 1, y + 1]
-        return __face(bottom_left, isCheck)
+    class edge :
+        def __init__(self, e) :
+            self.e = e
+            self.w = [1]
 
     def plot_board(self, checker = True, edges = False, dotsVisible = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
@@ -78,7 +77,7 @@ class Diamond :
                 plt.fill(X,Y, color = 'lightgrey')
 
         if edges :
-            for edge in self.E :
+            for edge in list(self.E.values()) :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
