@@ -18,12 +18,17 @@ class Diamond :
         self.__white_faces = set(sum([ self.D[i][1 : self.n ] for i in range(1, 2*self.n - 1, 2 )], [] ))  # bottom left coordinates of white faces; ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' '
         self.grey_faces = set([self.__face(x, True) for x in self.__grey_faces ])
         self.white_faces = set([self.__face(x, False) for x in self.__white_faces ])
-        self.faces = self.grey_faces.union(self.white_faces)
+
+        F = self.grey_faces.union(self.white_faces)
+
+        self.faces = dict()
+        for f in F :
+            self.faces[f.bottom_left] = f
 
         self.Am = []           # Get A_m boundary faces
 
     def get_Am(self, m) :
-        return [face for face in self.faces if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
+        return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
 
         # Edges
 
@@ -47,18 +52,13 @@ class Diamond :
                                    self.edge(((x, y + 1), (x,y)))  ] )
                 self.DP = []
 
-            def showEdges(self) :
-                # for edge in self.edges :
-                #     print(edge.e)
-                return
-
             def edge(self, e) :                         # Ideally I'd make a vertex object too, but that's overkill
                 parent = self
                 class edge :
                     def __init__(self, e) :
                         self.e = e
                         self.parent = parent                                  # Accessing this returns the parent face of the edge
-                        self.w = [1]                                           # These are the edge weights ...
+                        self.w = []                                           # These are the edge weights ...
                 return edge(e)
 
             def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
