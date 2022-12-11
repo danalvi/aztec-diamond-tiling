@@ -54,6 +54,7 @@ class Diamond :
             self.isCheck = isCheck
             x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
             self.edges = []
+            self.DP = [2]
 
         def get_poly(self) :                        # This shall return the face as a polygon in anticlockwise starting from bottom left coordrinate
             x, y = self.bottom_left
