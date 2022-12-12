@@ -52,7 +52,6 @@ class Diamond :
         def __init__(self, bottom_left, isCheck) :
             self.bottom_left = bottom_left                                    # We will identify each face with its bottom left coordinate
             self.isCheck = isCheck
-            x, y = self.bottom_left                                       # Weather it is colored light grey or not in the chessboard checkering
             self.edges = []
             self.DP = [2]
 
@@ -66,7 +65,8 @@ class Diamond :
             self.e = e
             self.w = [1]
 
-    def plot_board(self, checker = True, edges = False, dotsVisible = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
+
+    def plot_board(self, checker = True, edges = False, dotsVisible = True, M = []) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
         X_blk, Y_blk = list(zip(*self.__D_blk))
 
@@ -82,6 +82,10 @@ class Diamond :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
+        if M != [] :
+            for e in M :
+                (u1, v1), (u2,v2) = e
+                plt.plot([u1,u2], [v1, v2], color = 'red', linewidth = 2)
         # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
 
         # for face in self.faces :
