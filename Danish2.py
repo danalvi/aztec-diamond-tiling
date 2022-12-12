@@ -10,58 +10,58 @@ def e_(face, edge) : # e'
 # Am_boundary = [face for face in list(grid.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) == n - 1   ]
 
 
-# def weight_computation(grid) :
-#     n = grid.n
-#     for k in range(1, n + 1) :
-#         #Ak = grid.get_Am(k)
-#         for face in list(grid.faces.values()):
-#             (i, j) = face.bottom_left
-#             if (i + j - k) % 2 == 0 :
-#                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
-#                 e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
-#                 e2 = face.edges[1]
-#
-#
-#                 alpha = e_(face, e1).w[-1]
-#                 gamma = e1.w[-1]
-#                 beta = e2.w[-1]
-#                 delta = e_(face, e2).w[-1]
-#
-#                 DP = alpha*gamma + beta*gamma
-#
-#                 e_(face, e1).w.append(gamma / DP)
-#                 e1.w.append(alpha / DP)
-#                 e2.w.append(delta / DP)
-#                 e_(face, e2).w.append(beta / DP)
-#
-#                 face.DP.append(DP)
-
-
 def weight_computation(grid) :
     n = grid.n
-    for k in range(1, n+1) :
-        Am = grid.get_Am(k)     #   Get A_k's face
-        for face in Am :    # for all faces in A_m
+    for k in range(1, n + 1) :
+        #Ak = grid.get_Am(k)
+        for face in list(grid.faces.values()):
             (i, j) = face.bottom_left
             if (i + j - k) % 2 == 0 :
                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
-
                 e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
                 e2 = face.edges[1]
+
 
                 alpha = e_(face, e1).w[-1]
                 gamma = e1.w[-1]
                 beta = e2.w[-1]
                 delta = e_(face, e2).w[-1]
 
-                face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
+                DP = alpha*gamma + beta*gamma
 
-                e1.w.append(alpha/grid.faces[(i, j+1)].DP[-1])
-                e_(face, e1).w.append(gamma/grid.faces[(i, j-1)].DP[-1])
-                e2.w.append(delta/grid.faces[(i+1, j)].DP[-1])
-                e_(face, e2).w.append(beta/grid.faces[(i-1, j)].DP[-1])
+                e_(face, e1).w.append(gamma / DP)
+                e1.w.append(alpha / DP)
+                e2.w.append(delta / DP)
+                e_(face, e2).w.append(beta / DP)
 
-                face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
+                face.DP.append(DP)
+
+
+# def weight_computation(grid) :
+#     n = grid.n
+#     for k in range(1, n+1) :
+#         Am = grid.get_Am(k)     #   Get A_k's face
+#         for face in Am :    # for all faces in A_m
+#             (i, j) = face.bottom_left
+#             if (i + j - k) % 2 == 0 :
+#                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
+#
+#                 e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
+#                 e2 = face.edges[1]
+#
+#                 alpha = e_(face, e1).w[-1]
+#                 gamma = e1.w[-1]
+#                 beta = e2.w[-1]
+#                 delta = e_(face, e2).w[-1]
+#
+#                 face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
+#
+#                 e1.w.append(alpha/grid.faces[(i, j+1)].DP[-1])
+#                 e_(face, e1).w.append(gamma/grid.faces[(i, j-1)].DP[-1])
+#                 e2.w.append(delta/grid.faces[(i+1, j)].DP[-1])
+#                 e_(face, e2).w.append(beta/grid.faces[(i-1, j)].DP[-1])
+#
+#                 face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
 
 
                 #face.DP.append(alpha*gamma + beta*delta)
@@ -72,16 +72,16 @@ def generate_matching(grid) :
     rng = np.random.default_rng(seed=42)
     M = dict()
     # For A_1
-    assert ((grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0] + grid.faces[(0,0)].edges[1].w[0] * grid.faces[(0,0)].edges[3].w[0] ) == grid.faces[(0,0)].DP[0])
+    # assert ((grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0] + grid.faces[(0,0)].edges[1].w[0] * grid.faces[(0,0)].edges[3].w[0] ) == grid.faces[(0,0)].DP[0])
+    #
+    # if rng.random() < (grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0]) / grid.faces[(0,0)].DP[0] :
+    #     M[frozenset(grid.faces[(0,0)].edges[0].e)] =  grid.faces[(0,0)].edges[0]
+    #     M[frozenset(grid.faces[(0,0)].edges[2].e)] =  grid.faces[(0,0)].edges[2]
+    # else :
+    #     M[frozenset(grid.faces[(0,0)].edges[1].e)] =  grid.faces[(0,0)].edges[1]
+    #     M[frozenset(grid.faces[(0,0)].edges[3].e)] =  grid.faces[(0,0)].edges[3]
 
-    if rng.random() < (grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0]) / grid.faces[(0,0)].DP[0] :
-        M[frozenset(grid.faces[(0,0)].edges[0].e)] =  grid.faces[(0,0)].edges[0]
-        M[frozenset(grid.faces[(0,0)].edges[2].e)] =  grid.faces[(0,0)].edges[2]
-    else :
-        M[frozenset(grid.faces[(0,0)].edges[1].e)] =  grid.faces[(0,0)].edges[1]
-        M[frozenset(grid.faces[(0,0)].edges[3].e)] =  grid.faces[(0,0)].edges[3]
-
-    for k in range(2, n) :
+    for k in range(1, n + 1) :
         Am = grid.get_Am(k)     #   Get A_k's face
         for face in Am :
              (i, j) = face.bottom_left
@@ -125,14 +125,9 @@ def generate_matching(grid) :
                     M[frozenset(beta.e)] = beta
     return M.values()
 
-grid = Aztec.Diamond(4)
+grid = Aztec.Diamond(35)
 weight_computation(grid)
 
 M = generate_matching(grid)
 matching = [tuple(edge.e) for edge in M]
 grid.plot_board(dotsVisible = False, M = matching)
-#assert len(matching) == len(grid.V) / 2
-# # Returns the weight of first edge in anticlockwise order of face with bottm left corner at (0,0)
-#print(grid.faces[(0,0)].edges[0].w)
-#x = (0,0)
-#assert ((grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0] + grid.faces[(0,0)].edges[1].w[0] * grid.faces[(0,0)].edges[3].w[0] ) == grid.faces[(0,0)].DP[0])
