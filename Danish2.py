@@ -12,77 +12,47 @@ def e_(face, edge) : # e'
 
 def weight_computation(grid) :
     n = grid.n
-    for k in range(1, n + 1) :
-        #Ak = grid.get_Am(k)
-        for face in list(grid.faces.values()):
+    for k in range(n-1, -1, -1) :
+        Ak = grid.get_Am(k + 1)
+        for face in Ak:
             (i, j) = face.bottom_left
-            if (i + j - k) % 2 == 0 :
-                #print(str(i) + ' ' + str(j) + ' ' + str(k))
+            if ((i + j - (k + 1) ) % 2 != 0)  :
+                #print(str(i) + ' ' + str(j) + ' ' + str(k+1))
+
                 e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
                 e2 = face.edges[1]
 
+                alpha = e_(face, e1).w[k]
+                gamma = e1.w[k]
+                beta = e2.w[k]
+                delta = e_(face, e2).w[k]
 
-                alpha = e_(face, e1).w[-1]
-                gamma = e1.w[-1]
-                beta = e2.w[-1]
-                delta = e_(face, e2).w[-1]
+                face.DP[k] = e_(face, e1).w[k]*e1.w[k] + e2.w[k]*e_(face, e2).w[k]
 
-                DP = alpha*gamma + beta*gamma
-
-                e_(face, e1).w.append(gamma / DP)
-                e1.w.append(alpha / DP)
-                e2.w.append(delta / DP)
-                e_(face, e2).w.append(beta / DP)
-
-                face.DP.append(DP)
-
-
-# def weight_computation(grid) :
-#     n = grid.n
-#     for k in range(1, n+1) :
-#         Am = grid.get_Am(k)     #   Get A_k's face
-#         for face in Am :    # for all faces in A_m
-#             (i, j) = face.bottom_left
-#             if (i + j - k) % 2 == 0 :
-#                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
-#
-#                 e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
-#                 e2 = face.edges[1]
-#
-#                 alpha = e_(face, e1).w[-1]
-#                 gamma = e1.w[-1]
-#                 beta = e2.w[-1]
-#                 delta = e_(face, e2).w[-1]
-#
-#                 face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
-#
-#                 e1.w.append(alpha/grid.faces[(i, j+1)].DP[-1])
-#                 e_(face, e1).w.append(gamma/grid.faces[(i, j-1)].DP[-1])
-#                 e2.w.append(delta/grid.faces[(i+1, j)].DP[-1])
-#                 e_(face, e2).w.append(beta/grid.faces[(i-1, j)].DP[-1])
-#
-#                 face.DP.append(e_(face, e1).w[-1]*e1.w[-1] + e2.w[-1]*e_(face, e2).w[-1])
-
-
-                #face.DP.append(alpha*gamma + beta*delta)
+                if (face.DP[k] != 0) :
+                    e_(face, e1).w[k-1] = gamma / face.DP[k]
+                    e1.w[k-1] = alpha / face.DP[k]
+                    e2.w[k-1] = delta / face.DP[k]
+                    e_(face, e2).w[k-1] = beta / face.DP[k]
+                elif alpha + beta != 0 :
+                    e1.w[k-1] = alpha
+                    e_(face, e1).w[k-1] = 1 / (alpha + beta)
+                    e2.w[k-1] = 1 / (alpha + beta)
+                    e_(face, e1).w[k-1] = beta
+                elif delta + gamma != 0 :
+                    e1.w[k-1] = 1 / (delta + gamma)
+                    e_(face, e1).w[k-1] = gamma
+                    e2.w[k-1] = delta
+                    e_(face, e2).w[k-1] = 1 / (delta + gamma)
 
 
 def generate_matching(grid) :
     n = grid.n
     rng = np.random.default_rng(seed=42)
     M = dict()
-    # For A_1
-    # assert ((grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0] + grid.faces[(0,0)].edges[1].w[0] * grid.faces[(0,0)].edges[3].w[0] ) == grid.faces[(0,0)].DP[0])
-    #
-    # if rng.random() < (grid.faces[(0,0)].edges[0].w[0] * grid.faces[(0,0)].edges[2].w[0]) / grid.faces[(0,0)].DP[0] :
-    #     M[frozenset(grid.faces[(0,0)].edges[0].e)] =  grid.faces[(0,0)].edges[0]
-    #     M[frozenset(grid.faces[(0,0)].edges[2].e)] =  grid.faces[(0,0)].edges[2]
-    # else :
-    #     M[frozenset(grid.faces[(0,0)].edges[1].e)] =  grid.faces[(0,0)].edges[1]
-    #     M[frozenset(grid.faces[(0,0)].edges[3].e)] =  grid.faces[(0,0)].edges[3]
 
-    for k in range(1, n + 1) :
-        Am = grid.get_Am(k)     #   Get A_k's face
+    for k in range(0, n) :
+        Am = grid.get_Am(k+1)     #   Get A_k's face
         for face in Am :
              (i, j) = face.bottom_left
              if (i + j - k) % 2 == 0 :
@@ -94,10 +64,8 @@ def generate_matching(grid) :
 
                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
 
-                DP = alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]
-
                 if not ( (frozenset(alpha.e) in M) or (frozenset(beta.e) in M) or (frozenset(delta.e) in M) or (frozenset(gamma.e) in M) ) :
-                     if rng.random() < alpha.w[k]*gamma.w[k] / DP :
+                     if rng.random() < alpha.w[k]*gamma.w[k] / (alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]) :
                          M[frozenset(gamma.e)] = gamma
                          M[frozenset(alpha.e)] = alpha
                      else :
@@ -123,9 +91,10 @@ def generate_matching(grid) :
                 elif (frozenset(delta.e) in M) :
                     del M[frozenset(delta.e)]
                     M[frozenset(beta.e)] = beta
+
     return M.values()
 
-grid = Aztec.Diamond(35)
+grid = Aztec.Diamond(100)
 weight_computation(grid)
 
 M = generate_matching(grid)
