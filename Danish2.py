@@ -94,7 +94,7 @@ def generate_matching(grid) :
 
     return M.values()
 
-grid = Aztec.Diamond(50)
+grid = Aztec.Diamond(100)
 weight_computation(grid)
 
 M = generate_matching(grid)

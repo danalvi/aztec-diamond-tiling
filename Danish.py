@@ -94,25 +94,28 @@ class Diamond :
                 plt.plot([u1,u2], [v1, v2], color = 'red', linewidth = 1)
         elif M != [] and domino == True :
             for e in M :
+                edgecol = 'black'
+                if self.n > 70 :
+                    edgecol = 'None'
                 (u1, v1), (u2,v2) = sorted(e)       # (u1,v1) will be bottom left
                 if v1 == v2 :                       # horizontal - check then non check (left to right)
                     if (u1 + v1 - self.n) % 2 == 0 :
                         X = [ u1 - (1/2), u1 - (1/2), u2 + (1/2), u2 + (1/2) ]
                         Y = [ v1 + (1/2), v1 - (1/2), v2 - (1/2), v2 + (1/2) ]
-                        plt.fill(X,Y, color = 'red', edgecolor='black')
+                        plt.fill(X,Y, color = 'red', edgecolor=edgecol)
                     else :                          # horizontal - noncheck then check (left to right)
                         X = [ u1 - (1/2), u1 - (1/2), u2 + (1/2), u2 + (1/2) ]
                         Y = [ v1 + (1/2), v1 - (1/2), v2 - (1/2), v2 + (1/2) ]
-                        plt.fill(X,Y, color = 'blue', edgecolor='black')
+                        plt.fill(X,Y, color = 'blue', edgecolor=edgecol)
                 if u1 == u2 :
                     if (u1 + v1 - self.n) % 2 == 0 :
                         X = [u1 - (1/2), u1 + (1/2), u2 + (1/2), u2 - (1/2)]
                         Y = [v1 - (1/2), v1 - (1/2), v2 + (1/2), v2 + (1/2)]
-                        plt.fill(X,Y, color = 'green', edgecolor='black')
+                        plt.fill(X,Y, color = 'green', edgecolor=edgecol)
                     else :
                         X = [u1 - (1/2), u1 + (1/2), u2 + (1/2), u2 - (1/2)]
                         Y = [v1 - (1/2), v1 - (1/2), v2 + (1/2), v2 + (1/2)]
-                        plt.fill(X,Y, color = 'yellow', edgecolor='black')
+                        plt.fill(X,Y, color = 'yellow', edgecolor=edgecol)
 
 
         # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
