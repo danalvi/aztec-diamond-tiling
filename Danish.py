@@ -72,7 +72,7 @@ class Diamond :
                 self.w = [None for _ in range(1, parent.n)] + [1]
         return edge(e)
 
-    def plot_board(self, checker = True, edges = False, dotsVisible = True, M = []) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
+    def plot_board(self, checker = False, edges = False, dotsVisible = False, M = [], domino = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
         X_blk, Y_blk = list(zip(*self.__D_blk))
 
@@ -88,10 +88,33 @@ class Diamond :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
-        if M != [] :
+        if M != [] and domino == False :
             for e in M :
                 (u1, v1), (u2,v2) = e
                 plt.plot([u1,u2], [v1, v2], color = 'red', linewidth = 1)
+        elif M != [] and domino == True :
+            for e in M :
+                (u1, v1), (u2,v2) = sorted(e)       # (u1,v1) will be bottom left
+                if v1 == v2 :                       # horizontal - check then non check (left to right)
+                    if (u1 + v1 - self.n) % 2 == 0 :
+                        X = [ u1 - (1/2), u1 - (1/2), u2 + (1/2), u2 + (1/2) ]
+                        Y = [ v1 + (1/2), v1 - (1/2), v2 - (1/2), v2 + (1/2) ]
+                        plt.fill(X,Y, color = 'red', edgecolor='black')
+                    else :                          # horizontal - noncheck then check (left to right)
+                        X = [ u1 - (1/2), u1 - (1/2), u2 + (1/2), u2 + (1/2) ]
+                        Y = [ v1 + (1/2), v1 - (1/2), v2 - (1/2), v2 + (1/2) ]
+                        plt.fill(X,Y, color = 'blue', edgecolor='black')
+                if u1 == u2 :
+                    if (u1 + v1 - self.n) % 2 == 0 :
+                        X = [u1 - (1/2), u1 + (1/2), u2 + (1/2), u2 - (1/2)]
+                        Y = [v1 - (1/2), v1 - (1/2), v2 + (1/2), v2 + (1/2)]
+                        plt.fill(X,Y, color = 'green', edgecolor='black')
+                    else :
+                        X = [u1 - (1/2), u1 + (1/2), u2 + (1/2), u2 - (1/2)]
+                        Y = [v1 - (1/2), v1 - (1/2), v2 + (1/2), v2 + (1/2)]
+                        plt.fill(X,Y, color = 'yellow', edgecolor='black')
+
+
         # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
 
         # for face in self.faces :

@@ -48,7 +48,7 @@ def weight_computation(grid) :
 
 def generate_matching(grid) :
     n = grid.n
-    rng = np.random.default_rng(seed=42)
+    rng = np.random.default_rng()
     M = dict()
 
     for k in range(0, n) :
@@ -94,9 +94,9 @@ def generate_matching(grid) :
 
     return M.values()
 
-grid = Aztec.Diamond(100)
+grid = Aztec.Diamond(50)
 weight_computation(grid)
 
 M = generate_matching(grid)
 matching = [tuple(edge.e) for edge in M]
-grid.plot_board(dotsVisible = False, M = matching)
+grid.plot_board(domino = True, M = matching)
