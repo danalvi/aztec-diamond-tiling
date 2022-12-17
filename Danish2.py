@@ -92,11 +92,11 @@ def generate_matching(grid) :
                     del M[frozenset(delta.e)]
                     M[frozenset(beta.e)] = beta
 
-    return M.values()
-
-grid = Aztec.Diamond(100)
-weight_computation(grid)
-
-M = generate_matching(grid)
-matching = [tuple(edge.e) for edge in M]
-grid.plot_board(domino = True, M = matching)
+    return M
+#
+# grid = Aztec.Diamond(50)
+# weight_computation(grid)
+#
+# M = generate_matching(grid)
+# matching = [tuple(edge.e) for edge in M]
+# grid.plot_board(domino = True, M = matching)

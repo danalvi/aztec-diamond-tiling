@@ -1,12 +1,12 @@
-
 import math
+import numpy as np
 import matplotlib.pyplot as plt
 
 class Diamond :
     def __init__(self, n): # n is the order of the Aztec Diamond
         self.n = n
         self.D = [ [(x,y) for x in range(-n, n + 1) for y in range(-n - 1, n + 1) if x + y == i and abs(x - y) <= n ] for i in range(-n + 1, n + 2)   ] # D^{k}_{n} as defined on [1] p. 11
-        #V = len(self.D)
+        V = len(self.D)
         #self.w_m = math.pow(1 / math.pow(2,((self.n+1)*(self.n)/2)),(1/(V/2)))
         self.__D_blk = sum([ self.D[i] for i in range(0, 2*self.n + 1, 2 )], [])
         self.__D_red = sum([ self.D[i] for i in range(1, 2*self.n, 2 )], [])
@@ -45,6 +45,99 @@ class Diamond :
                             self.E[frozenset( {(x + 1, y + 1), (x, y + 1)})],
                             self.E[frozenset({(x, y + 1), (x, y)})]  ]
 
+
+
+        self.V_h =  [(x,y) for x in range(-self.n - 1, self.n + 2) for y in range(-self.n - 1, self.n + 2) if abs(x) + abs(y) <= self.n + 1]
+        self.E_h = dict()
+
+    def height_function(self, matching) :
+        visited = dict()
+
+        for v in self.V_h :
+            visited[v] = False
+
+        queue = []
+        queue.append((-self.n - 1, 0))
+        visited[(-self.n - 1, 0)] = True
+
+        def nbrs(i, j) :
+            n = []
+            if (-1)**(self.n + i + j) == 1 :
+                return [(i, j + 1), (i, j - 1)]
+            else :
+                return [(i + 1, j), (i - 1, j)]
+
+        # First BFS to construct the oriented edges
+
+        while queue:
+            (i,j) = queue.pop(0)
+            N = [(i_,j_) for (i_,j_) in nbrs(i,j) if abs(i_) + abs(j_) <= self.n + 1  ]
+            for (i_,j_) in N:
+                if visited[(i_,j_)] == False:
+                    self.E_h[((i,j),(i_,j_))] = 0
+                    queue.append((i_,j_))
+                    visited[(i_,j_)] = True
+                else :
+                    for (i_,j_) in N :
+                        if ((i,j), (i_, j_)) not in self.E_h.keys() :
+                            self.E_h[((i,j),(i_,j_))] = 0
+
+        self.E_h[((3,0),(4,0))] = 0
+
+
+            # Second BFS to return height function
+        h = dict()       # V_h to Integer
+
+        for v in self.V_h :
+            visited[v] = False
+
+        queue = []
+        queue.append((-self.n - 1, 0))
+        visited[(-self.n - 1, 0)] = True
+        h[(- self.n - 1, 0 )] = 0   # normali
+
+        while queue:
+            (i,j) = queue.pop(0)
+            N = [(i_,j_) for (i_,j_) in nbrs(i,j) if abs(i_) + abs(j_) <= self.n + 1  ]
+            for (i_,j_) in N:
+                if visited[(i_,j_)] == False:
+                    # check if crosses a domino, action in both cases
+                    ((u1, v1), (u2, v2)) = sorted(((i,j),(i_,j_)))
+                    if (u1 == u2) :
+                        if frozenset({(u2, v2), (u2, v2 + 1)}) in matching.keys() :
+                            h[(i_,j_)] = h[(i,j)] - 3
+                        else :
+                            h[(i_,j_)] = h[(i,j)] + 1
+                    if (v1 == v2) :
+                        if frozenset({(u2, v2), (u2 + 1, v2)}) in matching.keys() :
+                            h[(i_,j_)] = h[(i,j)] - 3
+                        else :
+                            h[(i_,j_)] = h[(i,j)] + 1
+
+                    queue.append((i_,j_))
+                    visited[(i_,j_)] = True
+                else :
+                    for (i_,j_) in N :
+                        if ((i,j), (i_, j_)) not in self.E_h.keys() :
+                            # check if crosses a domino, action in both cases
+                            ((u1, v1), (u2, v2)) = sorted(((i,j),(i_,j_)))
+                            if (u1 == u2) :
+                                if frozenset({(u2, v2), (u2, v2 + 1)}) in matching.keys() :
+                                    h[(i_,j_)] = h[(i,j)] - 3
+                                else :
+                                    h[(i_,j_)] = h[(i,j)] + 1
+                            if (v1 == v2) :
+                                if frozenset({(u2, v2), (u2 + 1, v2)}) in matching.keys() :
+                                    h[(i_,j_)] = h[(i,j)] - 3
+                                else :
+                                    h[(i_,j_)] = h[(i,j)] + 1
+
+            h[(self.n + 1,0)] = 0
+        return h
+
+
+
+
     def get_Am(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
 
@@ -72,7 +165,7 @@ class Diamond :
                 self.w = [None for _ in range(1, parent.n)] + [1]
         return edge(e)
 
-    def plot_board(self, checker = False, edges = False, dotsVisible = False, M = [], domino = True) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
+    def plot_board(self, checker = False, edges = False, dotsVisible = False, matching = dict(), domino = True, height = False) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
         X_blk, Y_blk = list(zip(*self.__D_blk))
 
@@ -88,6 +181,7 @@ class Diamond :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
+        M = [tuple(edge.e) for edge in matching.values()]
         if M != [] and domino == False :
             for e in M :
                 (u1, v1), (u2,v2) = e
@@ -116,7 +210,30 @@ class Diamond :
                         X = [u1 - (1/2), u1 + (1/2), u2 + (1/2), u2 - (1/2)]
                         Y = [v1 - (1/2), v1 - (1/2), v2 + (1/2), v2 + (1/2)]
                         plt.fill(X,Y, color = 'yellow', edgecolor=edgecol)
+            if height :
+                h = self.height_function(matching)
+                V_h_shift = [(x + 1/2,y + 1/2) for (x,y) in self.V_h]
+                V_h_label = [h[(u,v)] for (u,v) in self.V_h]
+                X_height_lbl, Y_height_lbl = list(zip(*V_h_shift))
 
+                for i, lbl in enumerate(V_h_label):
+                    plt.annotate(lbl, (X_height_lbl[i], Y_height_lbl[i]))
+
+        #               # For debugging only. This was to check if the orientation graph was right and therefore the BFS. This was a struggle.
+        # if height :
+        #     red = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 == 0 ]
+        #     blk = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 != 0 ]
+        #
+        #     X_red_height, Y_red_height  = list(zip(*red))
+        #     X_blk_height, Y_blk_height  = list(zip(*blk))
+        #
+        #     plt.scatter(X_blk_height,Y_blk_height, color = 'black')
+        #     plt.scatter(X_red_height,Y_red_height, color = 'red')
+        #
+        #     base_arrows, head_arrows = list(zip(*self.E_h.keys()))
+        #     head_arrows = tuple(np.array(head_arrows) - np.array(base_arrows))
+        #     for i in range(len(base_arrows)) :
+        #         plt.arrow(base_arrows[i][0], base_arrows[i][1], head_arrows[i][0], head_arrows[i][1], head_width=0.05, head_length=0.1, fc='k', ec='k', length_includes_head=True)
 
         # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
 
@@ -130,5 +247,5 @@ class Diamond :
 
         plt.scatter(X_blk,Y_blk, color = 'black', alpha = alpha_ )
         plt.scatter(X_red,Y_red, color = 'red', alpha = alpha_)
-        plt.axis('off')
+        #plt.axis('off')
         plt.show()
