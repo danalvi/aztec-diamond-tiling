@@ -1,6 +1,6 @@
 import math
 import numpy as np
-import Danish as Aztec
+import diamond as Aztec
 
 def e_(face, edge) : # e'
     edges = face.edges
