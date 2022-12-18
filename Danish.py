@@ -96,47 +96,48 @@ class Diamond :
         visited[(-self.n - 1, 0)] = True
         h[(- self.n - 1, 0 )] = 0   # normali
 
+        # def crosses_Domino(matching, e) :
+        #     ((i,j), (i_,j_)) = e
+        #     if (j == j_) : # horizontal
+        #         if frozenset({(i, j), (i, j + 1)}) in matching.keys() :
+        #             print({(i, j), (i, j + 1)})
+        #             return True
+        #         elif frozenset({(i_, j_), (i_, j_ + 1)}) in matching.keys() :
+        #             print({(i_, j_), (i_, j_ + 1)})
+        #             return True
+        #     elif (i == i_) : # vertical
+        #         if frozenset({(i, j), (i + 1, j)}) in matching.keys() :
+        #             print({(i, j), (i + 1, j)})
+        #         elif frozenset({(i_, j_), (i_ + 1, j_)}) in matching.keys() :
+        #             print({(i_, j_), (i_ + 1, j_)})
+        #             return True
+        #     return False
+
+        # Very inefficient code, we will try to improve this part by dictionaries soon
+        domino_edges_cross = []
+        for ((u1, v1), (u2,v2)) in list(matching.keys()) :
+            ((u1, v1), (u2,v2)) = ((u1 - 1/2, v1 - 1/2), (u2 - 1/2,v2 -1/2))
+            if u1 == u2 :
+                domino_edges_cross += [{(u1 - 1/2, (v1+v2) /2 ), (u2 + 1/2, (v1+v2) /2 )}]
+            if v1 == v2 :
+                domino_edges_cross += [{((u1+u2) /2, v1 - 1/2  ), ( (u1+u2)/2, v2 + 1/2 )}]
+        #print(domino_edges_cross)
+
         while queue:
-            (i,j) = queue.pop(0)
+            (i,j) = queue.pop(0 )
             N = [(i_,j_) for (i_,j_) in nbrs(i,j) if abs(i_) + abs(j_) <= self.n + 1  ]
             for (i_,j_) in N:
                 if visited[(i_,j_)] == False:
                     # check if crosses a domino, action in both cases
-                    ((u1, v1), (u2, v2)) = sorted(((i,j),(i_,j_)))
-                    if (u1 == u2) :
-                        if frozenset({(u2, v2), (u2, v2 + 1)}) in matching.keys() :
-                            h[(i_,j_)] = h[(i,j)] - 3
-                        else :
-                            h[(i_,j_)] = h[(i,j)] + 1
-                    if (v1 == v2) :
-                        if frozenset({(u2, v2), (u2 + 1, v2)}) in matching.keys() :
-                            h[(i_,j_)] = h[(i,j)] - 3
-                        else :
-                            h[(i_,j_)] = h[(i,j)] + 1
-
+                    e = {(i,j), (i_,j_)}
+                    if e in domino_edges_cross :
+                        h[(i_,j_)] = h[(i,j)] - 3
+                    else :
+                        h[(i_,j_)] = h[(i,j)] + 1
                     queue.append((i_,j_))
                     visited[(i_,j_)] = True
-                else :
-                    for (i_,j_) in N :
-                        if ((i,j), (i_, j_)) not in self.E_h.keys() :
-                            # check if crosses a domino, action in both cases
-                            ((u1, v1), (u2, v2)) = sorted(((i,j),(i_,j_)))
-                            if (u1 == u2) :
-                                if frozenset({(u2, v2), (u2, v2 + 1)}) in matching.keys() :
-                                    h[(i_,j_)] = h[(i,j)] - 3
-                                else :
-                                    h[(i_,j_)] = h[(i,j)] + 1
-                            if (v1 == v2) :
-                                if frozenset({(u2, v2), (u2 + 1, v2)}) in matching.keys() :
-                                    h[(i_,j_)] = h[(i,j)] - 3
-                                else :
-                                    h[(i_,j_)] = h[(i,j)] + 1
-
             h[(self.n + 1,0)] = 0
         return h
-
-
-
 
     def get_Am(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
@@ -165,7 +166,7 @@ class Diamond :
                 self.w = [None for _ in range(1, parent.n)] + [1]
         return edge(e)
 
-    def plot_board(self, checker = False, edges = False, dotsVisible = False, matching = dict(), domino = True, height = False) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
+    def plot_board(self, checker = False, edges = False, dotsVisible = False, matching = dict(), domino = True, height = False, debug = False) :                  # This plots the underlying board. When the matching algorithm is implemented we will write the Aztec Diamond with domino plot
         X_red, Y_red = list(zip(*self.__D_red))
         X_blk, Y_blk = list(zip(*self.__D_blk))
 
@@ -220,7 +221,7 @@ class Diamond :
                     plt.annotate(lbl, (X_height_lbl[i], Y_height_lbl[i]))
 
         #               # For debugging only. This was to check if the orientation graph was right and therefore the BFS. This was a struggle.
-        # if height :
+        if debug  :
         #     red = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 == 0 ]
         #     blk = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 != 0 ]
         #
@@ -229,13 +230,13 @@ class Diamond :
         #
         #     plt.scatter(X_blk_height,Y_blk_height, color = 'black')
         #     plt.scatter(X_red_height,Y_red_height, color = 'red')
-        #
-        #     base_arrows, head_arrows = list(zip(*self.E_h.keys()))
-        #     head_arrows = tuple(np.array(head_arrows) - np.array(base_arrows))
-        #     for i in range(len(base_arrows)) :
-        #         plt.arrow(base_arrows[i][0], base_arrows[i][1], head_arrows[i][0], head_arrows[i][1], head_width=0.05, head_length=0.1, fc='k', ec='k', length_includes_head=True)
+            E_h_translated = [((u1 +1/2,v1 + 1/2), ( u2 + 1/2, v2 + 1/2)) for ((u1,v1),(u2,v2)) in self.E_h.keys()]
+            base_arrows, head_arrows = list(zip(*E_h_translated))
+            head_arrows = tuple(np.array(head_arrows) - np.array(base_arrows))
+            for i in range(len(base_arrows)) :
+                plt.arrow(base_arrows[i][0], base_arrows[i][1], head_arrows[i][0], head_arrows[i][1], head_width=0.05, head_length=0.1, fc='k', ec='k', length_includes_head=True)
 
-        # # This is only for debugging purposes (to see the white faces, colored blue for visibility )
+        # This is only for debugging purposes (to see the white faces, colored blue for visibility )
 
         # for face in self.faces :
         #     X, Y = face.get_poly()
