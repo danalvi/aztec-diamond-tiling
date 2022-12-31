@@ -162,6 +162,7 @@ class Diamond :
         class edge :
             def __init__(self, e) :
                 self.e = e
+                self.vec = None
                 self.parent = parent
                 self.w = [None for _ in range(1, parent.n)] + [1]
         return edge(e)

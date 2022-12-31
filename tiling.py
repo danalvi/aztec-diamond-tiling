@@ -91,6 +91,19 @@ def generate_matching(grid) :
                 elif (frozenset(delta.e) in M) :
                     del M[frozenset(delta.e)]
                     M[frozenset(beta.e)] = beta
+    
+        for edge in list(M.keys()) :
+            (u1, v1), (u2,v2) = sorted(tuple(edge)) 
+            if v1 == v2 :                       # horizontal - check then non check (left to right)
+                if (u1 + v1 - grid.n) % 2 == 0 :
+                    M[edge].vac = np.array([ 1, 0])
+                else :                          # horizontal - noncheck then check (left to right)
+                    M[edge].vac = np.array([-1, 0])
+            if u1 == u2 :
+                if (u1 + v1 - grid.n) % 2 == 0 :
+                    M[edge].vac = np.array([0,  1])
+                else :
+                    M[edge].vac = np.array([0, -1])
 
     return M
 #
