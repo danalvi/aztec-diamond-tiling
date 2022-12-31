@@ -94,24 +94,7 @@ class Diamond :
         queue = []
         queue.append((-self.n - 1, 0))
         visited[(-self.n - 1, 0)] = True
-        h[(- self.n - 1, 0 )] = 0   # normali
-
-        # def crosses_Domino(matching, e) :
-        #     ((i,j), (i_,j_)) = e
-        #     if (j == j_) : # horizontal
-        #         if frozenset({(i, j), (i, j + 1)}) in matching.keys() :
-        #             print({(i, j), (i, j + 1)})
-        #             return True
-        #         elif frozenset({(i_, j_), (i_, j_ + 1)}) in matching.keys() :
-        #             print({(i_, j_), (i_, j_ + 1)})
-        #             return True
-        #     elif (i == i_) : # vertical
-        #         if frozenset({(i, j), (i + 1, j)}) in matching.keys() :
-        #             print({(i, j), (i + 1, j)})
-        #         elif frozenset({(i_, j_), (i_ + 1, j_)}) in matching.keys() :
-        #             print({(i_, j_), (i_ + 1, j_)})
-        #             return True
-        #     return False
+        h[(- self.n - 1, 0 )] = 0   # normalize
 
         # Very inefficient code, we will try to improve this part by dictionaries soon
         domino_edges_cross = []
@@ -121,7 +104,6 @@ class Diamond :
                 domino_edges_cross += [{(u1 - 1/2, (v1+v2) /2 ), (u2 + 1/2, (v1+v2) /2 )}]
             if v1 == v2 :
                 domino_edges_cross += [{((u1+u2) /2, v1 - 1/2  ), ( (u1+u2)/2, v2 + 1/2 )}]
-        #print(domino_edges_cross)
 
         while queue:
             (i,j) = queue.pop(0 )
@@ -183,7 +165,8 @@ class Diamond :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
-        M = [tuple(edge.e) for edge in matching.values()]
+        M = [tuple(edge[0].e) for edge in matching.values()]
+        
         if M != [] and domino == False :
             for e in M :
                 (u1, v1), (u2,v2) = e
@@ -221,16 +204,8 @@ class Diamond :
                 for i, lbl in enumerate(V_h_label):
                     plt.annotate(lbl, (X_height_lbl[i], Y_height_lbl[i]))
 
-        #               # For debugging only. This was to check if the orientation graph was right and therefore the BFS. This was a struggle.
+        # For debugging only. This was to check if the orientation graph was right and therefore the BFS. This was a struggle.
         if debug  :
-        #     red = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 == 0 ]
-        #     blk = [(i,j) for (i,j) in self.V_h if (i + j - self.n + 1) % 2 != 0 ]
-        #
-        #     X_red_height, Y_red_height  = list(zip(*red))
-        #     X_blk_height, Y_blk_height  = list(zip(*blk))
-        #
-        #     plt.scatter(X_blk_height,Y_blk_height, color = 'black')
-        #     plt.scatter(X_red_height,Y_red_height, color = 'red')
             E_h_translated = [((u1 +1/2,v1 + 1/2), ( u2 + 1/2, v2 + 1/2)) for ((u1,v1),(u2,v2)) in self.E_h.keys()]
             base_arrows, head_arrows = list(zip(*E_h_translated))
             head_arrows = tuple(np.array(head_arrows) - np.array(base_arrows))
