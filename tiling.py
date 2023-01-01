@@ -46,7 +46,7 @@ def weight_computation(grid) :
                     e_(face, e2).w[k-1] = 1 / (delta + gamma)
 
 
-def generate_matching(grid) :
+def generate_matching(grid, energy = False) :
     n = grid.n
     rng = np.random.default_rng()
     M = dict()
@@ -66,11 +66,11 @@ def generate_matching(grid) :
 
                 if not ( (frozenset(alpha.e) in M) or (frozenset(beta.e) in M) or (frozenset(delta.e) in M) or (frozenset(gamma.e) in M) ) :
                      if rng.random() < alpha.w[k]*gamma.w[k] / (alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]) :
-                         M[frozenset(gamma.e)] = (gamma, None)
-                         M[frozenset(alpha.e)] = (alpha, None)
+                         M[frozenset(gamma.e)] = gamma
+                         M[frozenset(alpha.e)] = alpha
                      else :
-                         M[frozenset(delta.e)] = (delta, None)
-                         M[frozenset(beta.e)] =  (beta , None)
+                         M[frozenset(delta.e)] = delta
+                         M[frozenset(beta.e)] =  beta
                  # Case 2
                 elif ((frozenset(alpha.e) in M) and (frozenset(gamma.e) in M ) ) : # or ((frozenset(beta.e) in M) or (frozenset(delta.e) in M)) ):
                     del M[frozenset(alpha.e)]
@@ -81,31 +81,34 @@ def generate_matching(grid) :
                  # Case 3
                 elif (frozenset(alpha.e) in M) :
                     del M[frozenset(alpha.e)]
-                    M[frozenset(gamma.e)] = (gamma, None)
+                    M[frozenset(gamma.e)] = gamma
                 elif (frozenset(gamma.e) in M) :
                     del M[frozenset(gamma.e)]
-                    M[frozenset(alpha.e)] = (alpha, None)
+                    M[frozenset(alpha.e)] = alpha
                 elif (frozenset(beta.e) in M) :
                     del M[frozenset(beta.e)]
-                    M[frozenset(delta.e)] = (delta, None)
+                    M[frozenset(delta.e)] = delta
                 elif (frozenset(delta.e) in M) :
                     del M[frozenset(delta.e)]
-                    M[frozenset(beta.e)] = (beta  , None)
-    
-        for edge in list(M.keys()) :
-            (u1, v1), (u2,v2) = sorted(tuple(edge)) 
-            if v1 == v2 :                       # horizontal - check then non check (left to right)
-                if (u1 + v1 - grid.n) % 2 == 0 :
-                    M[edge] = (M[edge][0], np.array([ 1, 0]) )
-                else :                          # horizontal - noncheck then check (left to right)
-                    M[edge] = (M[edge][0], np.array([-1, 0]) )
-            if u1 == u2 :
-                if (u1 + v1 - grid.n) % 2 == 0 :
-                    M[edge] = (M[edge][0], np.array([0,  1]) )
-                else :
-                    M[edge] = (M[edge][0], np.array([0, -1]) )
+                    M[frozenset(beta.e)] = beta
 
-    return M
+        E = dict()
+        
+        if (energy) :
+            for edge in list(M.keys()) :
+                (u1, v1), (u2,v2) = sorted(tuple(edge)) 
+                if v1 == v2 :                       # horizontal - check then non check (left to right)
+                    if (u1 + v1 - grid.n) % 2 == 0 :
+                        E[edge] = np.array([ 1, 0])
+                    else :                          # horizontal - noncheck then check (left to right)
+                        E[edge] = np.array([-1, 0]) 
+                if u1 == u2 :
+                    if (u1 + v1 - grid.n) % 2 == 0 :
+                        E[edge] = np.array([0,  1])
+                    else :
+                        E[edge] = np.array([0, -1])
+
+    return M, E
 #
 # grid = Aztec.Diamond(50)
 # weight_computation(grid)
