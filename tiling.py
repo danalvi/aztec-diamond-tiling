@@ -26,24 +26,92 @@ def weight_computation(grid) :
                 gamma = e1.w[k]
                 beta = e2.w[k]
                 delta = e_(face, e2).w[k]
-
+                
+                print(face.bottom_left)
                 face.DP[k] = e_(face, e1).w[k]*e1.w[k] + e2.w[k]*e_(face, e2).w[k]
+                
+                node = None
+
+                # Case 1
 
                 if (face.DP[k] != 0) :
                     e_(face, e1).w[k-1] = gamma / face.DP[k]
                     e1.w[k-1] = alpha / face.DP[k]
                     e2.w[k-1] = delta / face.DP[k]
                     e_(face, e2).w[k-1] = beta / face.DP[k]
-                elif alpha + beta != 0 :
+
+                # Case 2
+                elif (alpha != 0 or beta != 0) and delta == 0 and gamma == 0 :                     # Top right
                     e1.w[k-1] = alpha
                     e_(face, e1).w[k-1] = 1 / (alpha + beta)
                     e2.w[k-1] = 1 / (alpha + beta)
                     e_(face, e1).w[k-1] = beta
-                elif delta + gamma != 0 :
+                    node = 1
+                elif (delta != 0 or gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
                     e1.w[k-1] = 1 / (delta + gamma)
                     e_(face, e1).w[k-1] = gamma
                     e2.w[k-1] = delta
                     e_(face, e2).w[k-1] = 1 / (delta + gamma)
+                    node = 2
+                elif (alpha != 0 or delta != 0) and gamma == 0 and beta == 0 :                    # Top left
+                    e1.w[k-1] = alpha
+                    e_(face, e1).w[k-1] = 1 / (alpha + delta)
+                    e2.w[k-1] = delta
+                    e_(face, e2).w[k-1] = 1 / (alpha + delta)
+                    node = 3
+                elif (gamma != 0 or beta != 0) and alpha == 0 and delta == 0:                     # Bottom Right
+                    e1.w[k-1] = 1 / (gamma + beta)
+                    e_(face, e1).w[k-1] = gamma
+                    e2.w[k-1] = 1 / (gamma + beta)
+                    e_(face, e2).w[k-1] = beta
+                    node = 4
+                # Case 3
+                elif alpha == 0 and beta == 0 and delta == 0 and gamma == 0 :
+                    e1.w[k-1] = 1 / math.sqrt(2)
+                    e_(face, e1).w[k-1] = 1 / math.sqrt(2)
+                    e2.w[k-1] = 1 / math.sqrt(2)
+                    e_(face, e2).w[k-1] = 1 / math.sqrt(2)
+
+                
+                # STEP 2
+                
+                boundary_edges = grid.boundary_edges(k + 1)
+                
+                if (alpha == 0 and beta == 0) :
+                    if (alpha in boundary_edges and beta in boundary_edges) :
+                        print("NOT TILEABLE!")
+                        break
+                    else :
+                        swap_face = grid.faces[(i+1, j+1)]
+                        swap_face.edges[0].w[k - 1] = 0
+                        swap_face.edges[3].w[k - 1] = 0
+                
+                if (delta == 0 and gamma == 0) :
+                    if (delta in boundary_edges and gamma in boundary_edges):
+                        print("NOT TILEABLE!")
+                        break
+                    else :
+                        swap_face = grid.faces[(i-1, j-1)]
+                        swap_face.edges[1].w[k - 1] = 0
+                        swap_face.edges[2].w[k - 1] = 0
+
+                if (alpha == 0 and delta == 0) :
+                    if (alpha in boundary_edges and delta in boundary_edges) :
+                        print("NOT TILEABLE!")
+                        break
+                    else :
+                        swap_face = grid.faces[(i-1, j+1)]
+                        swap_face.edges[0].w[k - 1] = 0
+                        swap_face.edges[1].w[k - 1] = 0
+                
+                if (gamma == 0 and beta == 0) :
+                    if (gamma in boundary_edges and beta in boundary_edges) :
+                        print("NOT TILEABLE!")
+                        break
+                    else :
+                        swap_face = grid.faces[(i+1, j-1)]
+                        swap_face.edges[2].w[k - 1] = 0
+                        swap_face.edges[3].w[k - 1] = 0
 
 
 def generate_matching(grid, energy = False) :

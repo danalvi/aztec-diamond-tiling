@@ -25,9 +25,7 @@ class Diamond :
         for f in F :
             self.faces[f.bottom_left] = f
 
-        self.Am = []           # Get A_m boundary faces
-
-                # Edges
+        # Edges
 
         self.E = dict()
 
@@ -123,6 +121,47 @@ class Diamond :
 
     def get_Am(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
+    
+    def boundary_edges(self, m) :
+        BL = [(x,y) for x in range(-m + 1, 0) for y in range(-m + 1, 0) if - x - y == m - 1 ]
+        TL = [(x,y) for x in range(-m + 1, 0) for y in range(1, m ) if - x + y == m - 1 ]
+        TR = [(x,y) for x in range(1, m - 1) for y in range(1, m - 1) if  x + y == m - 1 ]
+        BR = [(x,y) for x in range(1, m - 1) for y in range(-m + 1, 0)if  x - y == m - 1 ]
+        
+        b = dict()
+
+        for f in BL :
+            b[frozenset(self.faces[f].edges[0].e)] = self.faces[f].edges[0]
+            b[frozenset(self.faces[f].edges[3].e)] = self.faces[f].edges[3]
+        for f in TL :
+            b[frozenset(self.faces[f].edges[2].e)] = self.faces[f].edges[2]
+            b[frozenset(self.faces[f].edges[3].e)] = self.faces[f].edges[3]
+        for f in TR :
+            b[frozenset(self.faces[f].edges[1].e)] = self.faces[f].edges[1]
+            b[frozenset(self.faces[f].edges[2].e)] = self.faces[f].edges[2]
+        for f in BR :
+            b[frozenset(self.faces[f].edges[0].e)] = self.faces[f].edges[0]
+            b[frozenset(self.faces[f].edges[1].e)] = self.faces[f].edges[1]
+        
+        # Add corner edges 
+
+        b[frozenset(self.faces[(-m+1,0)].edges[0].e)] = self.faces[(-m+1,0)].edges[0]
+        b[frozenset(self.faces[(-m+1,0)].edges[2].e)] = self.faces[(-m+1,0)].edges[2]
+        b[frozenset(self.faces[(-m+1,0)].edges[3].e)] = self.faces[(-m+1,0)].edges[3]
+
+        b[frozenset(self.faces[(0,m-1)].edges[1].e)] = self.faces[(0,m-1)].edges[1]
+        b[frozenset(self.faces[(0,m-1)].edges[2].e)] = self.faces[(0,m-1)].edges[2]
+        b[frozenset(self.faces[(0,m-1)].edges[3].e)] = self.faces[(0,m-1)].edges[3]
+
+        b[frozenset(self.faces[(m-1,0)].edges[0].e)] = self.faces[(m-1,0)].edges[0]
+        b[frozenset(self.faces[(m-1,0)].edges[1].e)] = self.faces[(m-1,0)].edges[1]
+        b[frozenset(self.faces[(m-1,0)].edges[2].e)] = self.faces[(m-1,0)].edges[2]
+
+        b[frozenset(self.faces[(0,-m+1)].edges[0].e)] = self.faces[(0,-m+1)].edges[0]
+        b[frozenset(self.faces[(0,-m+1)].edges[1].e)] = self.faces[(0,-m+1)].edges[1]
+        b[frozenset(self.faces[(0,-m+1)].edges[3].e)] = self.faces[(0,-m+1)].edges[3]
+
+        return b
 
     def __face(self, bottom_left, isCheck) :
         parent = self
@@ -165,7 +204,7 @@ class Diamond :
                 (u1,v1), (u2,v2) = edge.e
                 plt.plot([u1,u2], [v1, v2], color = 'lightgrey', linewidth = 0.5)
 
-        M = [tuple(edge[0].e) for edge in matching.values()]
+        M = [tuple(edge.e) for edge in matching.values()]
         
         if M != [] and domino == False :
             for e in M :
