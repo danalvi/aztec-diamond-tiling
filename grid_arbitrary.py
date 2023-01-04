@@ -1,7 +1,7 @@
 import diamond as Aztec
 import tiling
 
-grid = Aztec.Diamond(8)
+grid = Aztec.Diamond(5)
 
 ### definition 1
 

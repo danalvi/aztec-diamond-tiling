@@ -26,47 +26,50 @@ def weight_computation(grid) :
                 gamma = e1.w[k]
                 beta = e2.w[k]
                 delta = e_(face, e2).w[k]
-                
-                print(face.bottom_left)
-                face.DP[k] = e_(face, e1).w[k]*e1.w[k] + e2.w[k]*e_(face, e2).w[k]
+            
+                if alpha == None :
+                    print("Error for alpha for face " + str((i,j)) + " at step " + str(k))
+                if beta == None :
+                    print("Error at beta for face " + str((i,j)) + " at step " + str(k))
+                if delta == None :
+                    print("Error at delta for face " + str((i,j)) + " at step " + str(k))
+                if gamma == None :
+                    print("Error at face " + str((i,j)) + " at step " + str(k))
                 
                 node = None
 
                 # Case 1
 
-                if (face.DP[k] != 0) :
-                    e_(face, e1).w[k-1] = gamma / face.DP[k]
-                    e1.w[k-1] = alpha / face.DP[k]
-                    e2.w[k-1] = delta / face.DP[k]
-                    e_(face, e2).w[k-1] = beta / face.DP[k]
-
+                if ( alpha != None and beta != None and gamma != None and delta != None) :
+                    face.DP[k] = alpha*gamma + beta*delta
+                    if face.DP[k] != 0 :
+                        e_(face, e1).w[k-1] = gamma / face.DP[k]
+                        e1.w[k-1] = alpha / face.DP[k]
+                        e2.w[k-1] = delta / face.DP[k]
+                        e_(face, e2).w[k-1] = beta / face.DP[k]
                 # Case 2
-                elif (alpha != 0 or beta != 0) and delta == 0 and gamma == 0 :                     # Top right
+                elif (alpha + beta != 0) and delta == 0 and gamma == 0 :                    # Top right
                     e1.w[k-1] = alpha
                     e_(face, e1).w[k-1] = 1 / (alpha + beta)
                     e2.w[k-1] = 1 / (alpha + beta)
                     e_(face, e1).w[k-1] = beta
-                    node = 1
-                elif (delta != 0 or gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
+                elif (delta + gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
                     e1.w[k-1] = 1 / (delta + gamma)
                     e_(face, e1).w[k-1] = gamma
                     e2.w[k-1] = delta
                     e_(face, e2).w[k-1] = 1 / (delta + gamma)
-                    node = 2
-                elif (alpha != 0 or delta != 0) and gamma == 0 and beta == 0 :                    # Top left
+                elif (alpha + delta != 0) and gamma == 0 and beta == 0 :                    # Top left
                     e1.w[k-1] = alpha
                     e_(face, e1).w[k-1] = 1 / (alpha + delta)
                     e2.w[k-1] = delta
                     e_(face, e2).w[k-1] = 1 / (alpha + delta)
-                    node = 3
-                elif (gamma != 0 or beta != 0) and alpha == 0 and delta == 0:                     # Bottom Right
+                elif (gamma + beta != 0) and alpha == 0 and delta == 0:                     # Bottom Right
                     e1.w[k-1] = 1 / (gamma + beta)
                     e_(face, e1).w[k-1] = gamma
                     e2.w[k-1] = 1 / (gamma + beta)
                     e_(face, e2).w[k-1] = beta
-                    node = 4
                 # Case 3
-                elif alpha == 0 and beta == 0 and delta == 0 and gamma == 0 :
+                else :      # if alpha, beta, gamma and delta are zero, because if any one was non-zero, one of the cases from previous elifs would  have been executed.
                     e1.w[k-1] = 1 / math.sqrt(2)
                     e_(face, e1).w[k-1] = 1 / math.sqrt(2)
                     e2.w[k-1] = 1 / math.sqrt(2)
@@ -87,7 +90,7 @@ def weight_computation(grid) :
                         swap_face.edges[3].w[k - 1] = 0
                 
                 if (delta == 0 and gamma == 0) :
-                    if (delta in boundary_edges and gamma in boundary_edges):
+                    if (delta in boundary_edges and gamma in boundary_edges) :
                         print("NOT TILEABLE!")
                         break
                     else :
@@ -102,7 +105,7 @@ def weight_computation(grid) :
                     else :
                         swap_face = grid.faces[(i-1, j+1)]
                         swap_face.edges[0].w[k - 1] = 0
-                        swap_face.edges[1].w[k - 1] = 0
+                        swap_face.edges[1].w[k - 1] = 0 
                 
                 if (gamma == 0 and beta == 0) :
                     if (gamma in boundary_edges and beta in boundary_edges) :
