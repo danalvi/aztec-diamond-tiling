@@ -13,6 +13,7 @@ def e_(face, edge) : # e'
 def weight_computation(grid) :
     n = grid.n
     for k in range(n-1, -1, -1) :
+        #print(k)
         Ak = grid.get_Am(k + 1)
         for face in Ak:
             (i, j) = face.bottom_left
@@ -36,48 +37,56 @@ def weight_computation(grid) :
                 if gamma == None :
                     print("Error at face " + str((i,j)) + " at step " + str(k))
                 
-                node = None
+                node = False
 
                 # Case 1
 
-                if ( alpha != None and beta != None and gamma != None and delta != None) :
-                    face.DP[k] = alpha*gamma + beta*delta
-                    if face.DP[k] != 0 :
-                        e_(face, e1).w[k-1] = gamma / face.DP[k]
-                        e1.w[k-1] = alpha / face.DP[k]
-                        e2.w[k-1] = delta / face.DP[k]
-                        e_(face, e2).w[k-1] = beta / face.DP[k]
+                #if ( alpha != None and beta != None and gamma != None and delta != None) :
+                face.DP[k] = alpha*gamma + beta*delta
+                if face.DP[k] != 0 :
+                    e_(face, e1).w[k-1] = gamma / face.DP[k]
+                    e1.w[k-1] = alpha / face.DP[k]
+                    e2.w[k-1] = delta / face.DP[k]
+                    e_(face, e2).w[k-1] = beta / face.DP[k]
+                    node = True
                 # Case 2
                 elif (alpha + beta != 0) and delta == 0 and gamma == 0 :                    # Top right
                     e1.w[k-1] = alpha
                     e_(face, e1).w[k-1] = 1 / (alpha + beta)
                     e2.w[k-1] = 1 / (alpha + beta)
                     e_(face, e1).w[k-1] = beta
+                    node = True
                 elif (delta + gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
                     e1.w[k-1] = 1 / (delta + gamma)
                     e_(face, e1).w[k-1] = gamma
                     e2.w[k-1] = delta
                     e_(face, e2).w[k-1] = 1 / (delta + gamma)
+                    node = True
                 elif (alpha + delta != 0) and gamma == 0 and beta == 0 :                    # Top left
                     e1.w[k-1] = alpha
                     e_(face, e1).w[k-1] = 1 / (alpha + delta)
                     e2.w[k-1] = delta
                     e_(face, e2).w[k-1] = 1 / (alpha + delta)
+                    node = True
                 elif (gamma + beta != 0) and alpha == 0 and delta == 0:                     # Bottom Right
                     e1.w[k-1] = 1 / (gamma + beta)
                     e_(face, e1).w[k-1] = gamma
                     e2.w[k-1] = 1 / (gamma + beta)
                     e_(face, e2).w[k-1] = beta
+                    node = True
                 # Case 3
-                else :      # if alpha, beta, gamma and delta are zero, because if any one was non-zero, one of the cases from previous elifs would  have been executed.
+                else :      # if alpha, beta, gamma and delta are zero, because if atleast one of them was non-zero, one of the cases from previous elifs would  have been executed.
                     e1.w[k-1] = 1 / math.sqrt(2)
                     e_(face, e1).w[k-1] = 1 / math.sqrt(2)
                     e2.w[k-1] = 1 / math.sqrt(2)
                     e_(face, e2).w[k-1] = 1 / math.sqrt(2)
-
-                
+                    node = True
                 # STEP 2
                 
+                if not node :
+                    print("None of the cases!")
+                    break
+
                 boundary_edges = grid.boundary_edges(k + 1)
                 
                 if (alpha == 0 and beta == 0) :
