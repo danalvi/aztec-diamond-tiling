@@ -61,39 +61,36 @@ grid = Aztec.Diamond(5)
 # grid.E[frozenset({(-5,5),(-6,5)})].w[-1] = 0
 
 
-## definition 2
+# definition 2
 
-grid.E[frozenset({(0,0),(-1,0)})].w[-1] = 0
-grid.E[frozenset({(0,1),(-1,1)})].w[-1] = 0
-grid.E[frozenset({(0,2),(-1,2)})].w[-1] = 0
-grid.E[frozenset({(0,2),(0,3)})].w[-1] = 0
-grid.E[frozenset({(1,2),(1,3)})].w[-1] = 0
-grid.E[frozenset({(2,2),(2,3)})].w[-1] = 0
-grid.E[frozenset({(2,2),(3,2)})].w[-1] = 0
-grid.E[frozenset({(2,1),(3,1)})].w[-1] = 0
-grid.E[frozenset({(2,0),(3,0)})].w[-1] = 0
-grid.E[frozenset({(2,-1),(3,-1)})].w[-1] = 0
-grid.E[frozenset({(2,-1),(2,-2)})].w[-1] = 0
-grid.E[frozenset({(1,-1),(1,-2)})].w[-1] = 0
 grid.E[frozenset({(0,-1),(0,-2)})].w[-1] = 0
-grid.E[frozenset({(0,-1),(-1,-1)})].w[-1] = 0
+grid.E[frozenset({(1,-1),(1,-2)})].w[-1] = 0
+grid.E[frozenset({(2,-1),(2,-2)})].w[-1] = 0
 
-# grid.E[frozenset({(0,2),(1,2)})].w[-1] = 2
-# grid.E[frozenset({(0,1),(1,1)})].w[-1] = 2
-# grid.E[frozenset({(0,0),(1,0)})].w[-1] = 2
+grid.E[frozenset({(2,-1),(3,-1)})].w[-1] = 0
+grid.E[frozenset({(2, 0),(3, 0)})].w[-1] = 0
+grid.E[frozenset({(2, 1),(3, 1)})].w[-1] = 0
+grid.E[frozenset({(2, 2),(3, 2)})].w[-1] = 0
 
-# grid.E[frozenset({(1,2),(2,2)})].w[-1] = 2
-# grid.E[frozenset({(1,1),(2,1)})].w[-1] = 2
-# grid.E[frozenset({(1,0),(2,0)})].w[-1] = 2
+grid.E[frozenset({(2, 2),(2, 3)})].w[-1] = 0
+grid.E[frozenset({(1, 2),(1, 3)})].w[-1] = 0
+grid.E[frozenset({(0, 2),(0, 3)})].w[-1] = 0
 
-# grid.E[frozenset({(0,1),(0,2)})].w[-1] = 2
-# grid.E[frozenset({(1,1),(1,2)})].w[-1] = 2
-# grid.E[frozenset({(2,1),(2,2)})].w[-1] = 2
+grid.E[frozenset({(0, 2),(-1, 2)})].w[-1] = 0
+grid.E[frozenset({(0, 1),(-1, 1)})].w[-1] = 0
+grid.E[frozenset({(0, 0),(-1, 0)})].w[-1] = 0
+grid.E[frozenset({(0, -1),(-1, -1)})].w[-1] = 0
 
-# grid.E[frozenset({(0,0),(0,1)})].w[-1] = 2
-# grid.E[frozenset({(1,0),(1,1)})].w[-1] = 2
-# grid.E[frozenset({(2,0),(2,1)})].w[-1] = 2
+## definition 3
 
+# grid.E[frozenset({(0,0),(-1,0)})].w[-1] = 0
+# grid.E[frozenset({(0,1),(-1,1)})].w[-1] = 0
+# grid.E[frozenset({(0,0),(0,-1)})].w[-1] = 0
+# grid.E[frozenset({(1,0),(1,-1)})].w[-1] = 0
+# grid.E[frozenset({(1,0),(2,0)})].w[-1] = 0
+# grid.E[frozenset({(1,1),(2,1)})].w[-1] = 0
+# grid.E[frozenset({(0,1),(0,2)})].w[-1] = 0
+# grid.E[frozenset({(1,1),(1,2)})].w[-1] = 0
 
 tiling.weight_computation(grid)
 M, N = tiling.generate_matching(grid)
