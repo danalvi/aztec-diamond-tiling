@@ -122,6 +122,9 @@ class Diamond :
     def get_Am(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) <= m - 1   ]
     
+    def get_Am_boundary(self, m) :
+        return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) == m - 1   ]
+    
     def boundary_edges(self, m) :
         BL = [(x,y) for x in range(-m + 1, 0) for y in range(-m + 1, 0) if - x - y == m - 1 ]
         TL = [(x,y) for x in range(-m + 1, 0) for y in range(1, m ) if - x + y == m - 1 ]
@@ -162,6 +165,18 @@ class Diamond :
         b[frozenset(self.faces[(0,-m+1)].edges[3].e)] = self.faces[(0,-m+1)].edges[3]
 
         return b
+
+    # def boundary_edges(self, m) : 
+    #     b = dict()
+    #     A_m = self.get_Am_boundary(m)
+        
+    #     for face in A_m :
+    #         b[frozenset(face.edges[0].e)] =  face.edges[0]
+    #         b[frozenset(face.edges[1].e)] =  face.edges[1]
+    #         b[frozenset(face.edges[2].e)] =  face.edges[2]
+    #         b[frozenset(face.edges[3].e)] =  face.edges[3]
+        
+    #     return b
 
     def __face(self, bottom_left, isCheck) :
         parent = self

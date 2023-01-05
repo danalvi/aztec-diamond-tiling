@@ -93,6 +93,6 @@ grid.E[frozenset({(0, -1),(-1, -1)})].w[-1] = 0
 # grid.E[frozenset({(1,1),(1,2)})].w[-1] = 0
 
 tiling.weight_computation(grid)
-M, N = tiling.generate_matching(grid)
+M, _ = tiling.generate_matching(grid, energy=False)
 
-grid.plot_board(matching= M, domino= True)
+#grid.plot_board(matching= M, domino= True)

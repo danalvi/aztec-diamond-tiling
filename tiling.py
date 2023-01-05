@@ -54,7 +54,6 @@ def weight_computation(grid) :
                     e_(face, e1).w[k-1] = 1 / (alpha + beta)
                     e2.w[k-1] = 1 / (alpha + beta)
                     e_(face, e2).w[k-1] = beta
-                    node = True
                 elif (delta + gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
                     e1.w[k-1] = 1 / (delta + gamma)
                     e_(face, e1).w[k-1] = gamma
@@ -125,33 +124,27 @@ def generate_matching(grid, energy = False) :
     M = dict()
 
     for k in range(0, n) :
+        #print(k)
         Am = grid.get_Am(k+1)     #   Get A_k's face
         for face in Am :
              (i, j) = face.bottom_left
              if (i + j + (k + 1) ) % 2 != 0 :
-                 # Case 3
+
                 alpha = face.edges[2]
                 gamma = face.edges[0]
                 beta  = face.edges[1]
                 delta = face.edges[3]
 
                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
-
-                if not ( (frozenset(alpha.e) in M) or (frozenset(beta.e) in M) or (frozenset(delta.e) in M) or (frozenset(gamma.e) in M) ) :
-                     if rng.random() < alpha.w[k]*gamma.w[k] / (alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]) :
-                         M[frozenset(gamma.e)] = gamma
-                         M[frozenset(alpha.e)] = alpha
-                     else :
-                         M[frozenset(delta.e)] = delta
-                         M[frozenset(beta.e)] =  beta
-                 # Case 2
-                elif ((frozenset(alpha.e) in M) and (frozenset(gamma.e) in M ) ) : # or ((frozenset(beta.e) in M) or (frozenset(delta.e) in M)) ):
+                print((i,j))
+                 # Case 1
+                if ((frozenset(alpha.e) in M) and (frozenset(gamma.e) in M ) ) : # or ((frozenset(beta.e) in M) or (frozenset(delta.e) in M)) ):
                     del M[frozenset(alpha.e)]
                     del M[frozenset(gamma.e)]
                 elif ((frozenset(beta.e) in M) and (frozenset(delta.e) in M ) ) :
                     del M[frozenset(beta.e)]
                     del M[frozenset(delta.e)]
-                 # Case 3
+                 # Case 2
                 elif (frozenset(alpha.e) in M) :
                     del M[frozenset(alpha.e)]
                     M[frozenset(gamma.e)] = gamma
@@ -164,6 +157,13 @@ def generate_matching(grid, energy = False) :
                 elif (frozenset(delta.e) in M) :
                     del M[frozenset(delta.e)]
                     M[frozenset(beta.e)] = beta
+                elif not ( (frozenset(alpha.e) in M) or (frozenset(beta.e) in M) or (frozenset(delta.e) in M) or (frozenset(gamma.e) in M) ) :
+                    if rng.random() < alpha.w[k]*gamma.w[k] / (alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]) :
+                        M[frozenset(gamma.e)] = gamma
+                        M[frozenset(alpha.e)] = alpha
+                    else :
+                        M[frozenset(delta.e)] = delta
+                        M[frozenset(beta.e)] =  beta
 
         E = dict()
         
