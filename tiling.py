@@ -78,8 +78,11 @@ def weight_computation(grid) :
                 
                 # STEP 2
 
-
                 boundary_edges = grid.boundary_edges(k + 1)
+
+                def is_in_Ak(edge, m):
+                    (u1,v1) , (u2, v2) = sorted(edge.e)
+                    return abs(u1 - 1/2) + abs(v1 - 1/2) <= m and abs(u2 - 1/2) + abs(v2 - 1/2) <= m
                 
                 if (alpha == 0 and beta == 0) :
                     if (alpha in boundary_edges and beta in boundary_edges) :
@@ -87,8 +90,10 @@ def weight_computation(grid) :
                         return
                     else :
                         swap_face = grid.faces[(i+1, j+1)]
-                        swap_face.edges[0].w[k - 1] = 0
-                        swap_face.edges[3].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[0], k ) :
+                            swap_face.edges[0].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[3], k ) :
+                            swap_face.edges[3].w[k - 1] = 0
                 
                 if (delta == 0 and gamma == 0) :
                     if (delta in boundary_edges and gamma in boundary_edges) :
@@ -96,8 +101,10 @@ def weight_computation(grid) :
                         return
                     else :
                         swap_face = grid.faces[(i-1, j-1)]
-                        swap_face.edges[1].w[k - 1] = 0
-                        swap_face.edges[2].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[1], k ) :
+                            swap_face.edges[1].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[2], k ) :
+                            swap_face.edges[2].w[k - 1] = 0
 
                 if (alpha == 0 and delta == 0) :
                     if (alpha in boundary_edges and delta in boundary_edges) :
@@ -105,8 +112,10 @@ def weight_computation(grid) :
                         return
                     else :
                         swap_face = grid.faces[(i-1, j+1)]
-                        swap_face.edges[0].w[k - 1] = 0
-                        swap_face.edges[1].w[k - 1] = 0 
+                        if is_in_Ak(swap_face.edges[0], k ) :
+                            swap_face.edges[0].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[1], k ) :
+                            swap_face.edges[1].w[k - 1] = 0 
                 
                 if (gamma == 0 and beta == 0) :
                     if (gamma in boundary_edges and beta in boundary_edges) :
@@ -114,8 +123,10 @@ def weight_computation(grid) :
                         return
                     else :
                         swap_face = grid.faces[(i+1, j-1)]
-                        swap_face.edges[2].w[k - 1] = 0
-                        swap_face.edges[3].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[2], k ) :
+                            swap_face.edges[2].w[k -1] = 0
+                        if is_in_Ak(swap_face.edges[3], k ) :
+                            swap_face.edges[3].w[k - 1] = 0
 
 
 def generate_matching(grid, energy = False) :
