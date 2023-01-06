@@ -78,55 +78,60 @@ def weight_computation(grid) :
                 
                 # STEP 2
 
-                boundary_edges = grid.boundary_edges(k + 1)
-
                 def is_in_Ak(edge, m):
                     (u1,v1) , (u2, v2) = sorted(edge.e)
                     return abs(u1 - 1/2) + abs(v1 - 1/2) <= m and abs(u2 - 1/2) + abs(v2 - 1/2) <= m
                 
+                def is_at_boundary(edge, m) :
+                    if m < 1 :
+                        print("m less than zero")
+                        return           
+                    (u1,v1) , (u2, v2) = edge.e
+                    return ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m - 1)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m - 1) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m))
+
                 if (alpha == 0 and beta == 0) :
-                    if (alpha in boundary_edges and beta in boundary_edges) :
-                        print("NOT TILEABLE!")
+                    if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e2, k + 1) ) :
+                        print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
                         return
                     else :
                         swap_face = grid.faces[(i+1, j+1)]
-                        if is_in_Ak(swap_face.edges[0], k ) :
-                            swap_face.edges[0].w[k - 1] = 0
-                        if is_in_Ak(swap_face.edges[3], k ) :
-                            swap_face.edges[3].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[0], k) :
+                            swap_face.edges[0].w[k-1] = 0
+                        if is_in_Ak(swap_face.edges[3], k) :
+                            swap_face.edges[3].w[k-1] = 0
                 
                 if (delta == 0 and gamma == 0) :
-                    if (delta in boundary_edges and gamma in boundary_edges) :
-                        print("NOT TILEABLE!")
+                    if (is_at_boundary(e_(face, e2), k + 1) and is_at_boundary(e1, k + 1)) :
+                        print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
                         return
                     else :
                         swap_face = grid.faces[(i-1, j-1)]
-                        if is_in_Ak(swap_face.edges[1], k ) :
-                            swap_face.edges[1].w[k - 1] = 0
-                        if is_in_Ak(swap_face.edges[2], k ) :
-                            swap_face.edges[2].w[k - 1] = 0
+                        if is_in_Ak(swap_face.edges[1], k) :
+                            swap_face.edges[1].w[k-1] = 0
+                        if is_in_Ak(swap_face.edges[2], k) :
+                            swap_face.edges[2].w[k-1] = 0
 
                 if (alpha == 0 and delta == 0) :
-                    if (alpha in boundary_edges and delta in boundary_edges) :
-                        print("NOT TILEABLE!")
+                    if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e_(face, e2), k + 1)) :
+                        print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
                         return
                     else :
                         swap_face = grid.faces[(i-1, j+1)]
-                        if is_in_Ak(swap_face.edges[0], k ) :
-                            swap_face.edges[0].w[k - 1] = 0
-                        if is_in_Ak(swap_face.edges[1], k ) :
-                            swap_face.edges[1].w[k - 1] = 0 
+                        if is_in_Ak(swap_face.edges[0], k) :
+                            swap_face.edges[0].w[k-1] = 0
+                        if is_in_Ak(swap_face.edges[1], k) :
+                            swap_face.edges[1].w[k-1] = 0 
                 
                 if (gamma == 0 and beta == 0) :
-                    if (gamma in boundary_edges and beta in boundary_edges) :
-                        print("NOT TILEABLE!")
+                    if (is_at_boundary(e1, k + 1) and is_at_boundary(e2, k + 1) ) :
+                        print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k) )
                         return
                     else :
                         swap_face = grid.faces[(i+1, j-1)]
                         if is_in_Ak(swap_face.edges[2], k ) :
-                            swap_face.edges[2].w[k -1] = 0
-                        if is_in_Ak(swap_face.edges[3], k ) :
-                            swap_face.edges[3].w[k - 1] = 0
+                            swap_face.edges[2].w[k-1] = 0
+                        if is_in_Ak(swap_face.edges[3], k) :
+                            swap_face.edges[3].w[k-1] = 0
 
 
 def generate_matching(grid, energy = False) :
@@ -147,7 +152,7 @@ def generate_matching(grid, energy = False) :
                 delta = face.edges[3]
 
                 #print(str(i) + ' ' + str(j) + ' ' + str(k))
-                print((i,j))
+                #print((i,j))
                  # Case 1
                 if ((frozenset(alpha.e) in M) and (frozenset(gamma.e) in M ) ) : # or ((frozenset(beta.e) in M) or (frozenset(delta.e) in M)) ):
                     del M[frozenset(alpha.e)]
@@ -168,7 +173,7 @@ def generate_matching(grid, energy = False) :
                 elif (frozenset(delta.e) in M) :
                     del M[frozenset(delta.e)]
                     M[frozenset(beta.e)] = beta
-                elif not ( (frozenset(alpha.e) in M) or (frozenset(beta.e) in M) or (frozenset(delta.e) in M) or (frozenset(gamma.e) in M) ) :
+                elif ( (frozenset(alpha.e) not in M) and (frozenset(beta.e) not in M) and (frozenset(delta.e) not in M) and (frozenset(gamma.e) not in M) ) :
                     if rng.random() < alpha.w[k]*gamma.w[k] / (alpha.w[k]*gamma.w[k] + beta.w[k]*delta.w[k]) :
                         M[frozenset(gamma.e)] = gamma
                         M[frozenset(alpha.e)] = alpha

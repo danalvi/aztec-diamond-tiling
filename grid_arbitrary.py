@@ -1,7 +1,7 @@
 import diamond as Aztec
 import tiling
 
-grid = Aztec.Diamond(10)
+
 
 ### definition 1
 
@@ -92,14 +92,17 @@ grid = Aztec.Diamond(10)
 # grid.E[frozenset({(0,1),(0,2)})].w[-1] = 0
 # grid.E[frozenset({(1,1),(1,2)})].w[-1] = 0
 
+## defn with onur
 
-for i in range(-3,3) :
-    grid.E[frozenset({(-2,i),(-3,i)})].w[-1] = 0
-    grid.E[frozenset({(1,i), (2,i)})].w[-1] = 0
+n = 200  # even please
+grid = Aztec.Diamond(n)
+# for i in range(int(-n/2),int(n/2)) :
+#     grid.E[frozenset({(-n, i),(-n-1,i)})].w[-1] = 0
+#     grid.E[frozenset({(n - 1,i), (n,i)})].w[-1] = 0
 
-for i in range(-2,2) :
-    grid.E[frozenset({(i,2),(i,3)})].w[-1] = 0
-    grid.E[frozenset({(i,-3), (i,-4)})].w[-1] = 0
+# for i in range(int(-n/2),int(n/2)) :
+#     grid.E[frozenset({(i,-n),(i, -n-1)})].w[-1] = 0
+#     grid.E[frozenset({(i, n - 1), (i,n)})].w[-1] = 0
 
 tiling.weight_computation(grid)
 M, _ = tiling.generate_matching(grid, energy=False)

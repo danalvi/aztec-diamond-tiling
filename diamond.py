@@ -94,14 +94,13 @@ class Diamond :
         visited[(-self.n - 1, 0)] = True
         h[(- self.n - 1, 0 )] = 0   # normalize
 
-        # Very inefficient code, we will try to improve this part by dictionaries soon
-        domino_edges_cross = []
+        domino_edges_cross = set({}) # implemented internally as a hash table in python
         for ((u1, v1), (u2,v2)) in list(matching.keys()) :
             ((u1, v1), (u2,v2)) = ((u1 - 1/2, v1 - 1/2), (u2 - 1/2,v2 -1/2))
             if u1 == u2 :
-                domino_edges_cross += [{(u1 - 1/2, (v1+v2) /2 ), (u2 + 1/2, (v1+v2) /2 )}]
+                domino_edges_cross.add(frozenset({(u1 - 1/2, (v1+v2) /2 ), (u2 + 1/2, (v1+v2) /2 )}))
             if v1 == v2 :
-                domino_edges_cross += [{((u1+u2) /2, v1 - 1/2  ), ( (u1+u2)/2, v2 + 1/2 )}]
+                domino_edges_cross.add(frozenset({((u1+u2) /2, v1 - 1/2  ), ( (u1+u2)/2, v2 + 1/2 )}))
 
         while queue:
             (i,j) = queue.pop(0 )
@@ -109,7 +108,7 @@ class Diamond :
             for (i_,j_) in N:
                 if visited[(i_,j_)] == False:
                     # check if crosses a domino, action in both cases
-                    e = {(i,j), (i_,j_)}
+                    e = frozenset({(i,j), (i_,j_)})
                     if e in domino_edges_cross :
                         h[(i_,j_)] = h[(i,j)] - 3
                     else :
@@ -124,59 +123,6 @@ class Diamond :
     
     def get_Am_boundary(self, m) :
         return [face for face in list(self.faces.values()) if abs(face.bottom_left[0]) + abs(face.bottom_left[1]) == m - 1   ]
-    
-    def boundary_edges(self, m) :
-        BL = [(x,y) for x in range(-m + 1, 0) for y in range(-m + 1, 0) if - x - y == m - 1 ]
-        TL = [(x,y) for x in range(-m + 1, 0) for y in range(1, m ) if - x + y == m - 1 ]
-        TR = [(x,y) for x in range(1, m - 1) for y in range(1, m - 1) if  x + y == m - 1 ]
-        BR = [(x,y) for x in range(1, m - 1) for y in range(-m + 1, 0)if  x - y == m - 1 ]
-        
-        b = dict()
-
-        for f in BL :
-            b[frozenset(self.faces[f].edges[0].e)] = self.faces[f].edges[0]
-            b[frozenset(self.faces[f].edges[3].e)] = self.faces[f].edges[3]
-        for f in TL :
-            b[frozenset(self.faces[f].edges[2].e)] = self.faces[f].edges[2]
-            b[frozenset(self.faces[f].edges[3].e)] = self.faces[f].edges[3]
-        for f in TR :
-            b[frozenset(self.faces[f].edges[1].e)] = self.faces[f].edges[1]
-            b[frozenset(self.faces[f].edges[2].e)] = self.faces[f].edges[2]
-        for f in BR :
-            b[frozenset(self.faces[f].edges[0].e)] = self.faces[f].edges[0]
-            b[frozenset(self.faces[f].edges[1].e)] = self.faces[f].edges[1]
-        
-        # Add corner edges 
-
-        b[frozenset(self.faces[(-m+1,0)].edges[0].e)] = self.faces[(-m+1,0)].edges[0]
-        b[frozenset(self.faces[(-m+1,0)].edges[2].e)] = self.faces[(-m+1,0)].edges[2]
-        b[frozenset(self.faces[(-m+1,0)].edges[3].e)] = self.faces[(-m+1,0)].edges[3]
-
-        b[frozenset(self.faces[(0,m-1)].edges[1].e)] = self.faces[(0,m-1)].edges[1]
-        b[frozenset(self.faces[(0,m-1)].edges[2].e)] = self.faces[(0,m-1)].edges[2]
-        b[frozenset(self.faces[(0,m-1)].edges[3].e)] = self.faces[(0,m-1)].edges[3]
-
-        b[frozenset(self.faces[(m-1,0)].edges[0].e)] = self.faces[(m-1,0)].edges[0]
-        b[frozenset(self.faces[(m-1,0)].edges[1].e)] = self.faces[(m-1,0)].edges[1]
-        b[frozenset(self.faces[(m-1,0)].edges[2].e)] = self.faces[(m-1,0)].edges[2]
-
-        b[frozenset(self.faces[(0,-m+1)].edges[0].e)] = self.faces[(0,-m+1)].edges[0]
-        b[frozenset(self.faces[(0,-m+1)].edges[1].e)] = self.faces[(0,-m+1)].edges[1]
-        b[frozenset(self.faces[(0,-m+1)].edges[3].e)] = self.faces[(0,-m+1)].edges[3]
-
-        return b
-
-    # def boundary_edges(self, m) : 
-    #     b = dict()
-    #     A_m = self.get_Am_boundary(m)
-        
-    #     for face in A_m :
-    #         b[frozenset(face.edges[0].e)] =  face.edges[0]
-    #         b[frozenset(face.edges[1].e)] =  face.edges[1]
-    #         b[frozenset(face.edges[2].e)] =  face.edges[2]
-    #         b[frozenset(face.edges[3].e)] =  face.edges[3]
-        
-    #     return b
 
     def __face(self, bottom_left, isCheck) :
         parent = self
