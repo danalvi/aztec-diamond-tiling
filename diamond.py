@@ -211,7 +211,7 @@ class Diamond :
             head_arrows = tuple(np.array(head_arrows) - np.array(base_arrows))
             for i in range(len(base_arrows)) :
                 plt.arrow(base_arrows[i][0], base_arrows[i][1], head_arrows[i][0], head_arrows[i][1], head_width=0.05, head_length=0.1, fc='k', ec='k', length_includes_head=True)
-                
+
         alpha_ = 1
         if not dotsVisible :
             alpha_ = 0

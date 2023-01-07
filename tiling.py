@@ -45,105 +45,105 @@ def weight_computation(grid) :
                     e1.w[k-1] = alpha / face.DP[k]
                     e2.w[k-1] = delta / face.DP[k]
                     e_(face, e2).w[k-1] = beta / face.DP[k]
-                else :
-                    if (alpha + beta != 0) and delta == 0 and gamma == 0 :                    # Top right
-                        e1.w[k-1] = alpha
-                        e_(face, e1).w[k-1] = 1 / (alpha + beta)
-                        e2.w[k-1] = 1 / (alpha + beta)
-                        e_(face, e2).w[k-1] = beta
-                    elif (delta + gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
-                        e1.w[k-1] = 1 / (delta + gamma)
-                        e_(face, e1).w[k-1] = gamma
-                        e2.w[k-1] = delta
-                        e_(face, e2).w[k-1] = 1 / (delta + gamma)
-                    elif (alpha + delta != 0) and gamma == 0 and beta == 0 :                    # Top left
-                        e1.w[k-1] = alpha
-                        e_(face, e1).w[k-1] = 1 / (alpha + delta)
-                        e2.w[k-1] = delta
-                        e_(face, e2).w[k-1] = 1 / (alpha + delta)
-                    elif (gamma + beta != 0) and alpha == 0 and delta == 0 :                     # Bottom Right
-                        e1.w[k-1] = 1 / (gamma + beta)
-                        e_(face, e1).w[k-1] = gamma
-                        e2.w[k-1] = 1 / (gamma + beta)
-                        e_(face, e2).w[k-1] = beta
-                    # Case 3
-                    elif alpha == 0 and beta == 0 and delta == 0 and gamma == 0 :
-                        e1.w[k-1] = 1 / math.sqrt(2)
-                        e_(face, e1).w[k-1] = 1 / math.sqrt(2)
-                        e2.w[k-1] = 1 / math.sqrt(2)
-                        e_(face, e2).w[k-1] = 1 / math.sqrt(2)    
+    #             else :
+    #                 if (alpha + beta != 0) and delta == 0 and gamma == 0 :                    # Top right
+    #                     e1.w[k-1] = alpha
+    #                     e_(face, e1).w[k-1] = 1 / (alpha + beta)
+    #                     e2.w[k-1] = 1 / (alpha + beta)
+    #                     e_(face, e2).w[k-1] = beta
+    #                 elif (delta + gamma != 0) and alpha == 0 and beta == 0 :                    # Bottom left
+    #                     e1.w[k-1] = 1 / (delta + gamma)
+    #                     e_(face, e1).w[k-1] = gamma
+    #                     e2.w[k-1] = delta
+    #                     e_(face, e2).w[k-1] = 1 / (delta + gamma)
+    #                 elif (alpha + delta != 0) and gamma == 0 and beta == 0 :                    # Top left
+    #                     e1.w[k-1] = alpha
+    #                     e_(face, e1).w[k-1] = 1 / (alpha + delta)
+    #                     e2.w[k-1] = delta
+    #                     e_(face, e2).w[k-1] = 1 / (alpha + delta)
+    #                 elif (gamma + beta != 0) and alpha == 0 and delta == 0 :                     # Bottom Right
+    #                     e1.w[k-1] = 1 / (gamma + beta)
+    #                     e_(face, e1).w[k-1] = gamma
+    #                     e2.w[k-1] = 1 / (gamma + beta)
+    #                     e_(face, e2).w[k-1] = beta
+    #                 # Case 3
+    #                 elif alpha == 0 and beta == 0 and delta == 0 and gamma == 0 :
+    #                     e1.w[k-1] = 1 / math.sqrt(2)
+    #                     e_(face, e1).w[k-1] = 1 / math.sqrt(2)
+    #                     e2.w[k-1] = 1 / math.sqrt(2)
+    #                     e_(face, e2).w[k-1] = 1 / math.sqrt(2)    
                 
-    # STEP 2 -----------------------------------------------------------------------------------------------------------------------
+    # # STEP 2 -----------------------------------------------------------------------------------------------------------------------
 
-    for k in range(n - 1, 1, -1) :
-        Ak = grid.get_Am(k + 1)
-        for face in Ak:
-            (i, j) = face.bottom_left
-            if ((i + j + (k + 1) ) % 2 != 0)  :
-                def is_in_Ak(edge, m):
-                    (u1,v1) , (u2, v2) = sorted(edge.e)
-                    return abs(u1 - 1/2) + abs(v1 - 1/2) <= m and abs(u2 - 1/2) + abs(v2 - 1/2) <= m
+    # for k in range(n - 1, 1, -1) :
+    #     Ak = grid.get_Am(k + 1)
+    #     for face in Ak:
+    #         (i, j) = face.bottom_left
+    #         if ((i + j + (k + 1) ) % 2 != 0)  :
+    #             def is_in_Ak(edge, m):
+    #                 (u1,v1) , (u2, v2) = sorted(edge.e)
+    #                 return abs(u1 - 1/2) + abs(v1 - 1/2) <= m and abs(u2 - 1/2) + abs(v2 - 1/2) <= m
                 
-                def is_at_boundary(edge, m) :
-                    if m < 1 :
-                        print("m less than zero")
-                        return           
-                    (u1,v1) , (u2, v2) = edge.e
-                    return ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m - 1)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m - 1) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m))
+    #             def is_at_boundary(edge, m) :
+    #                 if m < 1 :
+    #                     print("m less than zero")
+    #                     return           
+    #                 (u1,v1) , (u2, v2) = edge.e
+    #                 return ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m - 1)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m - 1) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m)) or ((abs(u1 - 1/2) + abs(v1 - 1/2) == m) and (abs(u2 - 1/2) + abs(v2 - 1/2) == m))
 
-                e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
-                e2 = face.edges[1]
+    #             e1 = face.edges[0]      # Edges are in anticlockwise order so two consecutive edges are adjacent
+    #             e2 = face.edges[1]
 
-                alpha = e_(face, e1).w[k]
-                gamma = e1.w[k]
-                beta = e2.w[k]
-                delta = e_(face, e2).w[k]
+    #             alpha = e_(face, e1).w[k]
+    #             gamma = e1.w[k]
+    #             beta = e2.w[k]
+    #             delta = e_(face, e2).w[k]
 
-                if alpha*gamma + beta*delta == 0 :
+    #             if alpha*gamma + beta*delta == 0 :
 
-                    if (alpha == 0 and beta == 0) :
-                        if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e2, k + 1) ) :
-                            print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
-                            return
-                        elif (not is_at_boundary(e_(face, e1), k + 1) and not is_at_boundary(e2, k + 1) ) : 
-                            swap_face = grid.faces[(i+1, j+1)]
-                            if is_in_Ak(swap_face.edges[0], k) :
-                                swap_face.edges[0].w[k-1] = 0
-                            if is_in_Ak(swap_face.edges[3], k) :
-                                swap_face.edges[3].w[k-1] = 0
+    #                 if (alpha == 0 and beta == 0) :
+    #                     if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e2, k + 1) ) :
+    #                         print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
+    #                         return
+    #                     elif (not is_at_boundary(e_(face, e1), k + 1) and not is_at_boundary(e2, k + 1) ) : 
+    #                         swap_face = grid.faces[(i+1, j+1)]
+    #                         if is_in_Ak(swap_face.edges[0], k) :
+    #                             swap_face.edges[0].w[k-1] = 0
+    #                         if is_in_Ak(swap_face.edges[3], k) :
+    #                             swap_face.edges[3].w[k-1] = 0
                     
-                    if (delta == 0 and gamma == 0) :
-                        if (is_at_boundary(e_(face, e2), k + 1) and is_at_boundary(e1, k + 1)) :
-                            print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
-                            return
-                        elif (not is_at_boundary(e_(face, e2), k + 1) and not is_at_boundary(e1, k + 1)) :
-                            swap_face = grid.faces[(i-1, j-1)]
-                            if is_in_Ak(swap_face.edges[1], k) :
-                                swap_face.edges[1].w[k-1] = 0
-                            if is_in_Ak(swap_face.edges[2], k) :
-                                swap_face.edges[2].w[k-1] = 0
+    #                 if (delta == 0 and gamma == 0) :
+    #                     if (is_at_boundary(e_(face, e2), k + 1) and is_at_boundary(e1, k + 1)) :
+    #                         print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
+    #                         return
+    #                     elif (not is_at_boundary(e_(face, e2), k + 1) and not is_at_boundary(e1, k + 1)) :
+    #                         swap_face = grid.faces[(i-1, j-1)]
+    #                         if is_in_Ak(swap_face.edges[1], k) :
+    #                             swap_face.edges[1].w[k-1] = 0
+    #                         if is_in_Ak(swap_face.edges[2], k) :
+    #                             swap_face.edges[2].w[k-1] = 0
 
-                    if (alpha == 0 and delta == 0) :
-                        if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e_(face, e2), k + 1)) :
-                            print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
-                            return
-                        elif (not is_at_boundary(e_(face, e1), k + 1) and not is_at_boundary(e_(face, e2), k + 1)) :
-                            swap_face = grid.faces[(i-1, j+1)]
-                            if is_in_Ak(swap_face.edges[0], k) :
-                                swap_face.edges[0].w[k-1] = 0
-                            if is_in_Ak(swap_face.edges[1], k) :
-                                swap_face.edges[1].w[k-1] = 0 
+    #                 if (alpha == 0 and delta == 0) :
+    #                     if (is_at_boundary(e_(face, e1), k + 1) and is_at_boundary(e_(face, e2), k + 1)) :
+    #                         print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k))
+    #                         return
+    #                     elif (not is_at_boundary(e_(face, e1), k + 1) and not is_at_boundary(e_(face, e2), k + 1)) :
+    #                         swap_face = grid.faces[(i-1, j+1)]
+    #                         if is_in_Ak(swap_face.edges[0], k) :
+    #                             swap_face.edges[0].w[k-1] = 0
+    #                         if is_in_Ak(swap_face.edges[1], k) :
+    #                             swap_face.edges[1].w[k-1] = 0 
                     
-                    if (gamma == 0 and beta == 0) :
-                        if (is_at_boundary(e1, k + 1) and is_at_boundary(e2, k + 1) ) :
-                            print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k) )
-                            return
-                        elif (not is_at_boundary(e1, k + 1) and not is_at_boundary(e2, k + 1) ) :
-                            swap_face = grid.faces[(i+1, j-1)]
-                            if is_in_Ak(swap_face.edges[2], k ) :
-                                swap_face.edges[2].w[k-1] = 0
-                            if is_in_Ak(swap_face.edges[3], k) :
-                                swap_face.edges[3].w[k-1] = 0
+    #                 if (gamma == 0 and beta == 0) :
+    #                     if (is_at_boundary(e1, k + 1) and is_at_boundary(e2, k + 1) ) :
+    #                         print("NOT TILEABLE!" + " for face " + str((i,j)) + " at step " + str(k) )
+    #                         return
+    #                     elif (not is_at_boundary(e1, k + 1) and not is_at_boundary(e2, k + 1) ) :
+    #                         swap_face = grid.faces[(i+1, j-1)]
+    #                         if is_in_Ak(swap_face.edges[2], k ) :
+    #                             swap_face.edges[2].w[k-1] = 0
+    #                         if is_in_Ak(swap_face.edges[3], k) :
+    #                             swap_face.edges[3].w[k-1] = 0
 
 
 def generate_matching(grid, energy = False) :
